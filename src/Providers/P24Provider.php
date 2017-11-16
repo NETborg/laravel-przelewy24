@@ -26,9 +26,7 @@ class P24Provider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {
-        parent::boot();
-        
+    {        
         // publish P24 config
         $this->publishes([
             __DIR__.'/../config/p24.php' => config_path('p24.php'),
