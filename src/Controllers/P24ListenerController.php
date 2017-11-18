@@ -13,7 +13,7 @@ use Illuminate\Http\Response;
 class P24ListenerController extends Controller {
     
     
-    public function status(Request $request)
+    public function confirmation(Request $request)
     {
         return new Response("listening ...");
     }
