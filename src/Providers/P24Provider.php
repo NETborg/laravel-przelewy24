@@ -30,7 +30,7 @@ class P24Provider extends ServiceProvider
         // publish P24 config
         $this->publishes([
             __DIR__.'/../config/p24.php' => config_path('p24.php'),
-        ]);
+        ], 'config');
         
         // load P24 routes
         $this->loadRoutesFrom(__DIR__.'/../routes/p24.php');

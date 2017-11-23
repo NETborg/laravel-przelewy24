@@ -32,7 +32,7 @@ class CreateP24TransactionsTable extends Migration
             $table->string('p24_url_status')->nullable();
             $table->integer('p24_time_limit')->default(0);
             $table->integer('p24_wait_for_result')->default(0);
-            $table->integer('p24_channel');
+            $table->integer('p24_channel')->nullable();
             $table->integer('p24_shipping')->unsigned()->default(0);
             $table->string('p24_transfer_label', 20)->nullable();
             $table->string('p24_sign', 100);

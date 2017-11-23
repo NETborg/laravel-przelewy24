@@ -5,9 +5,12 @@ use NetborgTeam\P24\Exceptions\InvalidMerchantIdException;
 use NetborgTeam\P24\Exceptions\InvalidCRCException;
 use NetborgTeam\P24\Exceptions\InvalidSenderException;
 use NetborgTeam\P24\Exceptions\InvalidSignatureException;
+use NetborgTeam\P24\Exceptions\P24ConnectionException;
+use NetborgTeam\P24\Exceptions\InvalidTransactionException;
 use NetborgTeam\P24\P24Transaction;
 use NetborgTeam\P24\P24TransactionConfirmation;
 use Illuminate\Http\Request;
+use Curl\Curl;
 
 
 /**
@@ -17,8 +20,8 @@ use Illuminate\Http\Request;
  */
 class P24Manager {
     
-    const ENDPOINT_LIVE = "https://secure.przelewy24.pl/";
-    const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl/";
+    const ENDPOINT_LIVE = "https://secure.przelewy24.pl";
+    const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl";
     const API_VERSION = "3.2";
     
     
@@ -48,6 +51,14 @@ class P24Manager {
         'p24_api_version',
         'p24_sign',
         'p24_encoding',
+    ];
+    
+    private static $TRANSACTION_ITEM_KEYS = [
+        'p24_name',
+        'p24_description',
+        'p24_quantity',
+        'p24_price',
+        'p24_number'
     ];
     
     private static $CONFIRMATION_KEYS = [
@@ -95,9 +106,10 @@ class P24Manager {
     
     
     
-    public function __construct() {
-        $this->posId = config('p24.pos_id', 0);
-        $this->merchantId = config('p24.merchant_id', 0) > 0 ? config('p24.merchant_id', 0) : $this->posId;
+    public function __construct() 
+    {
+        $this->merchantId = config('p24.merchant_id', 0);
+        $this->posId = config('p24.pos_id', 0) > 0 ? config('p24.pos_id', 0) : $this->merchantId;
         $this->crc = config('p24.crc', null);
         
         if ((int) $this->merchantId === 0) {
@@ -163,7 +175,7 @@ class P24Manager {
      * @throws InvalidSenderException
      * @throws InvalidSignatureException
      */
-    public function validateTransactionConfirmation(P24Transaction $transaction, $confirmation)
+    public function validateTransactionConfirmation(P24Transaction $transaction, $confirmation, $sign)
     {
         if ($confirmation instanceof Request) {
             $confirmation = $this->getTransactionConfirmationFromRequest($confirmation);
@@ -171,13 +183,13 @@ class P24Manager {
         } 
         
         if ($confirmation instanceof P24TransactionConfirmation) {
-            if (!$this->isValidTransactionConfirmationSignature($confirmation, $request->input('p24_sign'))) {
+            if (!$this->isValidTransactionConfirmationSignature($confirmation, $sign)) {
                 $confirmation->verification_status = P24TransactionConfirmation::STATUS_INVALID_TRANSACTION_SIGNATURE;
                 $confirmation->save();
 
                 throw new InvalidSignatureException(
                         md5($this->makeTransactionConfirmationSignatureString($confirmation)), 
-                        $request->input('p24_sign'));
+                        $sign);
             }
 
             $confirmation->verification_status = P24TransactionConfirmation::STATUS_AWAITING_CONFIRMATION_VERIFICATION;
@@ -189,10 +201,59 @@ class P24Manager {
         return null;
     }
     
-    
-    public function registerTransaction(P24Transaction $transaction)
+    public function transaction(P24Transaction $transaction)
     {
-        throw new \Exception("TODO - create registerTransaction() procedure.");
+        $this->signTransaction($transaction);
+        $this->data = $this->serialize($transaction);
+        
+        return $this;
+    }
+
+    
+    /**
+     * 
+     * @param P24Transaction $transaction
+     * @return string|array|boolean Returns TOKEN (string) or FIELDS with errors (array) or FALSE on error
+     * @throws InvalidTransactionException
+     * @throws P24ConnectionException
+     */
+    public function register(P24Transaction $transaction=null)
+    {
+        if ($transaction) {
+            $this->transaction($transaction);
+        }
+        
+        if (count($this->data) == 0) {
+            throw new InvalidTransactionException();
+        }
+        
+        $this->p24_merchant_id = $this->merchantId;
+        $this->p24_pos_id = $this->posId;
+        $this->p24_api_version = self::API_VERSION;
+        
+        
+        if (!isset($this->data['p24_url_status'])) {
+            $this->data['p24_url_status'] = route('getTransactionStatusListener');
+        }
+
+        $curl = new Curl();
+        $curl->post($this->endpoint.'/trnRegister', $this->data);
+        
+        if ($curl->error) {
+            throw new P24ConnectionException($curl->errorMessage, $curl->errorCode);
+        }
+        
+        $response = $this->parseRegistrationResponse($curl->rawResponse);
+        
+        if ($response && count($response) > 0) {
+            if ($response['error'] === 0 && isset($response['token'])) {
+                return $response['token'];
+            } elseif ($response['error'] > 0) {
+                return $response['fields'];
+            }
+        }
+        
+        return false;
     }
     
     public function verifyTransactionConfirmation(P24TransactionConfirmation $confirmation)
@@ -206,9 +267,11 @@ class P24Manager {
     protected function signTransaction(P24Transaction $transaction)
     {
         $transaction->p24_sign = md5($this->makeTransactionSignatureString($transaction));
-        $transaction->save();
+        if (!$transaction->id) {
+            $transaction->save();
+        }
         
-        return $this;
+        return $transaction->p24_sign;
     }
     
     
@@ -216,7 +279,7 @@ class P24Manager {
     {
         return implode('|', [
             $transaction->p24_session_id,
-            $transaction->p24_merchant_id,
+            $this->merchantId,
             $transaction->p24_amount,
             $transaction->p24_currency,
             $this->crc
@@ -259,5 +322,53 @@ class P24Manager {
         }
         
         return $confirmation;
+    }
+    
+    protected function serialize(P24Transaction $transaction)
+    {
+        $params = collect($transaction->toArray())
+                ->only(static::$TRANSACTION_KEYS)
+                ->all();
+
+        if ($transaction->p24TransactionItems->isNotEmpty()) {
+            for($i=0; $i<$transaction->p24TransactionItems->count(); $i++) {
+                $item = collect($transaction->p24TransactionItems[$i]->toArray())
+                        ->only(static::$TRANSACTION_ITEM_KEYS)
+                        ->all();
+                
+                foreach($item as $key => $value) {
+                    $params[$key.'_'.$i] = $value;
+                }
+            }
+        }
+        
+        return $params;
+    }
+    
+    protected function parseRegistrationResponse($response)
+    {
+        preg_match("/^error=(\d+)&errorMessage=(.*)$/", $response, $matches);
+        if(count($matches) == 3) {
+            $fields = [];
+            foreach(explode('&', $matches[2]) as $error) {
+                list($key, $message) = explode(':', trim($error));
+                $fields[$key] = $message;
+            }
+            
+            return [
+                'error' => (int) $matches[1],
+                'fields' => $fields
+            ];
+        }
+        
+        preg_match("/^error=(\d+)&token=(.*)$/", $response, $matches);
+        if (count($matches) == 3) {
+            return [
+                'error' => (int) $matches[1],
+                'token' => $matches[2]
+            ];
+        }
+        
+        return false;
     }
 }

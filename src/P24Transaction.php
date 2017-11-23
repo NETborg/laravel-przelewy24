@@ -3,6 +3,7 @@
 namespace NetborgTeam\P24;
 
 use Illuminate\Database\Eloquent\Model;
+use NetborgTeam\P24\Supporters\RandGenerator;
 
 class P24Transaction extends Model
 {
@@ -13,6 +14,17 @@ class P24Transaction extends Model
         'created_at', 
         'updated_at', 
     ];
+    
+    
+    public static function makeUniqueId($sessionId, $seperator='|')
+    {
+        do {
+            $uniqueId = $sessionId.$seperator.RandGenerator::generate(100 - strlen($seperator.$sessionId));
+            $check = P24Transaction::where('p24_session_id', $uniqueId)->first();
+        } while ($check);
+        
+        return $uniqueId;
+    }
     
     
     
@@ -28,11 +40,14 @@ class P24Transaction extends Model
     
     
     
-    public function token($token)
+    public function token($token=null)
     {
-        $this->token = $token;
-        $this->save();
-        
-        return $this;
+        if ($token) {
+            $this->token = $token;
+            $this->save();
+
+            return $this;
+        }
+        return $this->token;
     }
 }
