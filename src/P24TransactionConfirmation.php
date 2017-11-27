@@ -13,6 +13,7 @@ class P24TransactionConfirmation extends Model
     const STATUS_INVALID_TRANSACTION_SIGNATURE = "invalid_transaction_signature";
     const STATUS_AWAITING_CONFIRMATION_VERIFICATION = "awaiting_confirmation_verification";
     const STATUS_INVALID_VERIFICATION_SIGNATURE = "invalid_verification_signature";
+    const STATUS_INVALID_TRANSACTION_PARAMETER = "invalid_transaction_parameter";
     const STATUS_INVALID_SENDER_IP = "invalid_sender_ip";
     const STATUS_CONFIRMED = "confirmed";
     const STATUS_CONFIRMED_VERIFIED = "confirmed_verified";

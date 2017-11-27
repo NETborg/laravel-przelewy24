@@ -17,6 +17,8 @@ class CreateP24TransactionConfirmationsTable extends Migration
         Schema::create('p24_transaction_confirmations', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('p24_transaction_id')->unsigned();
+            $table->integer('p24_merchant_id')->unsigned()->default(0);
+            $table->integer('p24_pos_id')->unsigned()->default(0);
             $table->string('p24_session_id', 100);
             $table->integer('p24_amount')->unsigned();
             $table->string('p24_currency', 3)->default('PLN');

@@ -7,6 +7,7 @@ use NetborgTeam\P24\Exceptions\InvalidSenderException;
 use NetborgTeam\P24\Exceptions\InvalidSignatureException;
 use NetborgTeam\P24\Exceptions\P24ConnectionException;
 use NetborgTeam\P24\Exceptions\InvalidTransactionException;
+use NetborgTeam\P24\Exceptions\InvalidTransactionParameterException;
 use NetborgTeam\P24\P24Transaction;
 use NetborgTeam\P24\P24TransactionConfirmation;
 use Illuminate\Http\Request;
@@ -80,7 +81,6 @@ class P24Manager {
         'p24_amount',
         'p24_currency',
         'p24_order_id',
-        'p24_statement',
         'p24_sign'
     ];
     
@@ -154,6 +154,44 @@ class P24Manager {
         return $this;
     }
     
+    
+    /**
+     * Extracts and returns P24TransactionConfirmation from Request provided.
+     * 
+     * @param Request $request
+     * @return P24TransactionConfirmation
+     */
+    public function parseTransactionConfirmation(Request $request)
+    {
+        return P24TransactionConfirmation::makeInstance($request, static::$CONFIRMATION_KEYS);
+    }
+    
+    protected function parseVerificationResponse($response)
+    {
+        preg_match("/^error=(\d+)&errorMessage=(.*)$/", $response, $matches);
+        if(count($matches) == 3) {
+            $fields = [];
+            foreach(explode('&', $matches[2]) as $error) {
+                list($key, $message) = explode(':', trim($error));
+                $fields[$key] = $message;
+            }
+            
+            return [
+                'error' => (int) $matches[1],
+                'fields' => $fields
+            ];
+        }
+        
+        preg_match("/^error=(\d+)$/", $response, $matches);
+        if (count($matches) == 2) {
+            return [
+                'error' => (int) $matches[1],
+            ];
+        }
+        
+        return false;
+    }
+    
     /**
      * Checks if request has been initiated from valid Przelewy24's server.
      * 
@@ -171,9 +209,11 @@ class P24Manager {
      * 
      * @param P24Transaction $transaction
      * @param Request|P24TransactionConfirmation $confirmation
+     * @param string $sign 
      * @return P24TransactionConfirmation|null
      * @throws InvalidSenderException
      * @throws InvalidSignatureException
+     * @throws InvalidTransactionParameterException
      */
     public function validateTransactionConfirmation(P24Transaction $transaction, $confirmation, $sign)
     {
@@ -191,6 +231,8 @@ class P24Manager {
                         md5($this->makeTransactionConfirmationSignatureString($confirmation)), 
                         $sign);
             }
+            
+            $this->validateTransactionParameters($transaction, $confirmation);
 
             $confirmation->verification_status = P24TransactionConfirmation::STATUS_AWAITING_CONFIRMATION_VERIFICATION;
             $confirmation->save();
@@ -199,6 +241,30 @@ class P24Manager {
         }
         
         return null;
+    }
+    
+    protected function validateTransactionParameters(P24Transaction $transaction, P24TransactionConfirmation $confirmation)
+    {
+        if ($this->merchantId != $confirmation->p24_merchant_id) {
+            $confirmation->verification_status = P24TransactionConfirmation::STATUS_INVALID_TRANSACTION_PARAMETER;
+            $confirmation->save();
+            throw new InvalidTransactionParameterException('p24_merchant_id', $this->merchantId, $confirmation->p24_merchant_id);
+        }            
+        if ($this->posId != $confirmation->p24_pos_id) {
+            $confirmation->verification_status = P24TransactionConfirmation::STATUS_INVALID_TRANSACTION_PARAMETER;
+            $confirmation->save();
+            throw new InvalidTransactionParameterException('p24_pos_id', $this->posId, $confirmation->p24_pos_id);
+        }
+        if ($transaction->p24_amount != $confirmation->p24_amount) {
+            $confirmation->verification_status = P24TransactionConfirmation::STATUS_INVALID_TRANSACTION_PARAMETER;
+            $confirmation->save();
+            throw new InvalidTransactionParameterException('p24_amount', $transaction->p24_amount, $confirmation->p24_amount);
+        }
+        if ($transaction->p24_currency != $confirmation->p24_currency) {
+            $confirmation->verification_status = P24TransactionConfirmation::STATUS_INVALID_TRANSACTION_PARAMETER;
+            $confirmation->save();
+            throw new InvalidTransactionParameterException('p24_currency', $transaction->p24_currency, $confirmation->p24_currency);
+        }
     }
     
     public function transaction(P24Transaction $transaction)
@@ -256,9 +322,28 @@ class P24Manager {
         return false;
     }
     
+    /**
+     * Sends back Transaction confirmation to PRZELEWY24's servers for verification.
+     * Returns verification response.
+     * 
+     * @param P24TransactionConfirmation $confirmation
+     * @return array
+     * @throws P24ConnectionException
+     */
     public function verifyTransactionConfirmation(P24TransactionConfirmation $confirmation)
     {
-        throw new \Exception("TODO - create verifyTransactionConfirmation() procedure.");
+        $verify = collect($confirmation->toArray())
+                ->only(self::$CONFIRMATION_VERIFY_KEYS)
+                ->all();
+        
+        $curl = new Curl();
+        $curl->post($this->endpoint.'/trnVerify', $verify);
+        
+        if ($curl->error) {
+            throw new P24ConnectionException($curl->errorMessage, $curl->errorCode);
+        }
+        
+        return $this->parseVerificationResponse($curl->response);
     }
     
     
