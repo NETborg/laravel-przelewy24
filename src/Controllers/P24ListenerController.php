@@ -43,15 +43,15 @@ class P24ListenerController extends Controller {
                 
                 $verificationResult = $manager->verifyTransactionConfirmation($transactionConfirmation);
                 
-            } catch (\NetborgTeam\P24\Exceptions\InvalidSignatureException $e) {
-                Slack::send($e->getMessage());
+            } catch (\NetborgTeam\P24\Exceptions\InvalidSignatureException $ex) {
+                Slack::send($ex->getMessage());
                 event(); // @TODO -> dodac event
                 return response();
             } catch (\NetborgTeam\P24\Exceptions\InvalidTransactionParameterException $ex) {
                 Slack::send($ex->getMessage());
                 event(); // @TODO -> dodac event
                 return response();
-            } catch (NetborgTeam\P24\Exceptions\P24ConnectionException $e) {
+            } catch (\NetborgTeam\P24\Exceptions\P24ConnectionException $ex) {
                 Slack::send($ex->getMessage());
                 event(); // @TODO -> dodac event
                 return response();
