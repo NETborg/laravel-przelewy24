@@ -165,6 +165,17 @@ class P24Manager {
     {
         return P24TransactionConfirmation::makeInstance($request, static::$CONFIRMATION_KEYS);
     }
+
+
+    /**
+     * Get P24WebServicesManager instance to execute requests to P24 Web Services.
+     *
+     * @return P24WebServicesManager|null
+     */
+    public function webServices()
+    {
+        return app()->make(P24WebServicesManager::class);
+    }
     
     protected function parseVerificationResponse($response)
     {

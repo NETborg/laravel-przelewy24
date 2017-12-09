@@ -50,4 +50,11 @@ class P24Transaction extends Model
         }
         return $this->token;
     }
+
+    public function redirectForPayment()
+    {
+        return config('p24.mode') == 'live'
+            ? redirect('https://secure.przelewy24.pl/trnRequest/'.$this->token)
+            : redirect('https://sandbox.przelewy24.pl/trnRequest/'.$this->token);
+    }
 }

@@ -5,6 +5,7 @@ namespace NetborgTeam\P24\Providers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use NetborgTeam\P24\Services\P24Manager;
+use NetborgTeam\P24\Services\P24WebServicesManager;
 
 class P24Provider extends ServiceProvider
 {
@@ -16,6 +17,11 @@ class P24Provider extends ServiceProvider
         // register P24Manager as singleton
         $this->app->singleton(P24Manager::class, function($app) {
             return new P24Manager();
+        });
+
+        // register P24WebServicesManager as singleton
+        $this->app->singleton(P24WebServicesManager::class, function($app) {
+            return new P24WebServicesManager();
         });
     }
     
