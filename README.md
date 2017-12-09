@@ -11,7 +11,7 @@ This library is still in early stage of development. Some functionalities may no
 * PHP 5.6+
 * Laravel 5.4+
 * PHP modules: php-soap
-* optionally [netborgteam/laravel-slack](https://packagist.org/packages/netborgteam/laravel-slack) (for getting notification about payment events on Slack's channel)
+* optionally [netborgteam/laravel-slack](https://bitbucket.org/netborgteam/laravel-slack) (for getting notification about payment events on Slack's channel)
 
 ### Installation ###
 ```
