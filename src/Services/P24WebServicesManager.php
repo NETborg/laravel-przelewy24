@@ -9,8 +9,14 @@
 namespace NetborgTeam\P24\Services;
 
 
+use Carbon\Carbon;
+use NetborgTeam\P24\ArrayOfRefund;
 use NetborgTeam\P24\Exceptions\InvalidCRCException;
 use NetborgTeam\P24\Exceptions\InvalidMerchantIdException;
+use NetborgTeam\P24\PaymentMethodsResult;
+use NetborgTeam\P24\TransactionFullResult;
+use NetborgTeam\P24\TransactionRefundResult;
+use NetborgTeam\P24\TransactionShortResult;
 
 class P24WebServicesManager
 {
@@ -50,6 +56,8 @@ class P24WebServicesManager
         if (!$this->crc) {
             throw new InvalidCRCException();
         }
+
+        $this->soap = new \SoapClient($this->endpoint());
     }
 
 
@@ -75,32 +83,99 @@ class P24WebServicesManager
 
     public function getFunctions()
     {
-        $this->soap = new \SoapClient($this->endpoint('GetFunctions'));
         return $this->soap->__getFunctions();
     }
 
+    public function getLastRequest()
+    {
+        return $this->soap->__getLastRequest();
+    }
+
+    public function getLastResponse()
+    {
+        return $this->soap->__getLastResponse();
+    }
+
+
+    /**
+     * Tests connection and authentication to Przelewy24 web service.
+     * Returns `true` on successful connection and authentication and `false` otherwise.
+     *
+     * @return bool
+     */
     public function testAccess()
     {
-        $this->soap = new \SoapClient($this->endpoint('TestAccess'));
         return $this->soap->TestAccess($this->merchantId, $this->apiKey);
     }
 
-    public function getPaymentMethods()
+    /**
+     * Gets list of payment methods from Przelewy24 available for your account.
+     *
+     * @param string $lang
+     * @return PaymentMethodsResult
+     */
+    public function getPaymentMethods($lang='pl')
     {
-        $this->soap = new \SoapClient($this->endpoint('PaymentMethods'));
-        return $this->soap->PaymentMethods($this->merchantId, $this->apiKey, 'pl');
+        return new PaymentMethodsResult(
+            $this->soap->PaymentMethods(
+                $this->merchantId,
+                $this->apiKey,
+                $lang
+            )
+        );
     }
 
+    /**
+     * Gets short transaction details from Przelewy24 web service.
+     *
+     * @param string $sessionId
+     * @return TransactionShortResult
+     */
     public function getTransactionBySessionId($sessionId)
     {
-        $this->soap = new \SoapClient($this->endpoint('GetTransactionBySessionId'));
-        return $this->soap->TrnBySessionId($this->merchantId, $this->apiKey, $sessionId);
+        return new TransactionShortResult(
+            $this->soap->TrnBySessionId(
+                $this->merchantId,
+                $this->apiKey,
+                $sessionId
+            )
+        );
     }
 
+    /**
+     * Gets full transaction details from Przelewy24 web service.
+     *
+     * @param string $sessionId
+     * @return TransactionFullResult
+     */
     public function getTransactionFullBySessionId($sessionId)
     {
-        $this->soap = new \SoapClient($this->endpoint('GetTransactionFullBySessionId'));
-        return $this->soap->TrnFullBySessionId($this->merchantId, $this->apiKey, $sessionId);
+        return new TransactionFullResult(
+            $this->soap->TrnFullBySessionId(
+                $this->merchantId,
+                $this->apiKey,
+                $sessionId
+            )
+        );
+    }
+
+    /**
+     * Issues refunds for provided transaction list.
+     *
+     * @param int $batch
+     * @param ArrayOfRefund $refundList
+     * @return TransactionRefundResult
+     */
+    public function refund($batch, ArrayOfRefund $refundList)
+    {
+        return new TransactionRefundResult(
+            $this->soap->TrnRefund(
+                $this->merchantId,
+                $this->apiKey,
+                $batch,
+                $refundList->toArray()
+            )
+        );
     }
 
 }
