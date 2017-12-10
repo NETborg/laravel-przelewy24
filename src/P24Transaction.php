@@ -3,6 +3,7 @@
 namespace NetborgTeam\P24;
 
 use Illuminate\Database\Eloquent\Model;
+use NetborgTeam\P24\Services\P24Manager;
 use NetborgTeam\P24\Supporters\RandGenerator;
 
 class P24Transaction extends Model
@@ -54,7 +55,7 @@ class P24Transaction extends Model
     public function redirectForPayment()
     {
         return config('p24.mode') == 'live'
-            ? redirect('https://secure.przelewy24.pl/trnRequest/'.$this->token)
-            : redirect('https://sandbox.przelewy24.pl/trnRequest/'.$this->token);
+            ? redirect(str_replace('{token}', $this->token, P24Manager::PAYMENT_LIVE_REDIRECT_URL))
+            : redirect(str_replace('{token}', $this->token, P24Manager::PAYMENT_SANDBOX_REDIRECT_URL));
     }
 }

@@ -23,6 +23,9 @@ class P24Manager {
     
     const ENDPOINT_LIVE = "https://secure.przelewy24.pl";
     const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl";
+    const PAYMENT_LIVE_REDIRECT_URL = "https://secure.przelewy24.pl/trnRequest/{token}";
+    const PAYMENT_SANDBOX_REDIRECT_URL = "https://sandbox.przelewy24.pl/trnRequest/{token}";
+
     const API_VERSION = "3.2";
     
     
