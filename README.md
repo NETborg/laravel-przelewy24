@@ -66,7 +66,8 @@ That's it. You can start to manage payments from Przelewy24.
 
 ### Examples of usage ###
 
-1. Transaction registration and payment initiation:
+#### API calls ####
+##### Transaction registration and customer payment initiation: #####
 ```php
 
 public function registerTransaction(
@@ -113,3 +114,63 @@ public function registerTransaction(
 
 Uppon successfull payment, Przelewy24 will send notification to your listener.
 No worries! Unless you have overrided `p24_url_status` with your custom URL, your app will handle all required checks for you. As default you will receive transaction status notifications on `/p24/status` URL.
+
+#### Przelewy24 Web Service calls ####
+To call any of Przelewy24's Web Service methods in your app, use `P24WebServicesManager` service.
+You can simply get an instance of this service either by directly calling it from container or by calling it indirectly using `P24Manager`:
+```php
+// direct call
+$wsManager = app()->make(\NetborgTeam\P24\Services\P24WebServicesManager::class);
+
+// get service instance via $manager
+$manager = app()->make(\NetborgTeam\P24\Services\P24Manager::class);
+$wsManager = $manager->webServices();
+``` 
+
+##### Test access to Web Service #####
+
+```php
+$result = $wsManager->testAccess();     // returns bool `true` if accessed successfully, `false` otherwise
+```
+
+##### Get a list of available Web Service functions #####
+
+```php
+$list = $wsManager->getFunctions();
+```
+
+##### Get list of available Payment Methods #####
+
+```php
+$list = $wsManager->getPaymentMethods()->result();  // returns an array of `PaymentMethod` instances.
+```
+
+##### Get SHORT transaction details by `sessionId` #####
+
+```php
+$transaction = $wsManager->getTransactionBySessionId('SESSION_ID')->result();  // where `SESSION_ID` is a `sessionId` parameter provided while transaction registration.
+```
+##### Get FULL transaction details by `sessionId` #####
+
+```php
+$transaction = $wsManager->getTransactionFullBySessionId('SESSION_ID')->result();  // where `SESSION_ID` is a `sessionId` parameter provided while transaction registration.
+```
+
+##### Make transaction refunds #####
+
+```php
+// build an `ArrayOfRefunds`
+$refunds = (new \NetborgTeam\P24\ArrayOfRefund())
+    // add transaction refund details 
+    // either by providing direct key values
+    ->addByKeys('SESSION_ID', ORDER_ID, AMOUNT)
+    
+    // or by passing `SingleRefund` objects  
+    ->add(new \NetborgTeam\P24\SingleRefund([
+        'sessionId' => 'SESSION_ID',
+        'orderId' => (int) ORDER_ID,
+        'amount' => (int) AMOUNT,
+    ]));
+    
+$results = $wsManager->refund(BATCH_ID, $refunds)->result();    // returns a list of refund results (see P24 Web Services docs)
+```
