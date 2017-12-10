@@ -94,10 +94,10 @@ public function registerTransaction(
             $token = $manager->transaction($transaction)->register();
             
             if (is_string($token)) {
-	            /* 
-		          if transaction has been successfully registered
-	              unique token will be returned - save it 
-	              with transaction details 
+	           /* 
+		         if transaction has been successfully registered
+	             unique token will be returned - save it 
+	             with transaction details 
                 */
                 $transaction->token($token);
 
@@ -117,7 +117,7 @@ public function registerTransaction(
 ```
 
 Uppon successfull payment, Przelewy24 will send notification to your listener.
-No worries! Unless you have overrided `p24_url_status` with your custom URL, your app will handle all required checks for you. As default you will receive transaction status notifications on `/p24/status` URL.
+No worries! Unless you have overrided `p24_url_status` with your custom URL, your app will handle all required checks for you. As default you will receive transaction status notifications on `https://your-app-host.com/p24/status` URL.
 
 #### Przelewy24 Web Service calls ####
 To call any of Przelewy24's Web Service methods in your app, use `P24WebServicesManager` service.
@@ -149,15 +149,15 @@ $list = $wsManager->getFunctions();
 $list = $wsManager->getPaymentMethods()->result();  // returns an array of `PaymentMethod` instances.
 ```
 
-##### Get SHORT transaction details by `sessionId` #####
+##### Get SHORT transaction details by `p24_session_id` #####
 
 ```php
-$transaction = $wsManager->getTransactionBySessionId('SESSION_ID')->result();  // where `SESSION_ID` is a `sessionId` parameter provided while transaction registration.
+$transaction = $wsManager->getTransactionBySessionId('SESSION_ID')->result();  // where `SESSION_ID` is a `p24_session_id` parameter provided while transaction registration.
 ```
-##### Get FULL transaction details by `sessionId` #####
+##### Get FULL transaction details by `p24_session_id` #####
 
 ```php
-$transaction = $wsManager->getTransactionFullBySessionId('SESSION_ID')->result();  // where `SESSION_ID` is a `sessionId` parameter provided while transaction registration.
+$transaction = $wsManager->getTransactionFullBySessionId('SESSION_ID')->result();  // where `SESSION_ID` is a `p24_session_id` parameter provided while transaction registration.
 ```
 
 ##### Make transaction refunds #####
