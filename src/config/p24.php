@@ -5,6 +5,6 @@ return [
     'pos_id' => env('P24_POS_ID', 0),
     'crc' => env('P24_CRC', null),
     'api_key' => env('P24_API_KEY', null),
-    'mode' => 'sandbox',                        // `sandbox` || `live`
-    'route_return' => null,                     // provide route name where Client shoud be redirected on transaction cancellation
+    'mode' => env('P24_MODE', 'sandbox'),   // `sandbox` || `live`
+    'route_return' => null,                             // provide route name where Client should be redirected on transaction cancellation
 ];
