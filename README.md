@@ -17,7 +17,7 @@ composer require netborg/laravel-przelewy24
 composer update
 ```
 
-Add Service Provider to your `config/app.php` file:
+If your run on Laravel 5.4, manually add Service Provider to your `config/app.php` file. For Laravel 5.5 and above, service auto-discovery feature will automatically do the job for you.
 ```php
 /*
 * Package Service Providers...
