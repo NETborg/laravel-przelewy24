@@ -15,7 +15,7 @@ class CreateP24TransactionItemsTable extends Migration
     {
         Schema::create('p24_transaction_items', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('p24_transaction_id')->unsigned();
+            $table->uuid('p24_transaction_id')->index();
             $table->string('p24_name', 127);
             $table->string('p24_description', 127)->nullable();
             $table->integer('p24_quantity')->default(1);

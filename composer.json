@@ -18,7 +18,8 @@
         "guzzlehttp/guzzle": "^6.3",
         "illuminate/support": "^5.4",
         "illuminate/http": "^5.4",
-        "illuminate/database": "^5.4"
+        "illuminate/database": "^5.4",
+        "ramsey/uuid": "^3.8"
     },
     "autoload": {
         "psr-4": { "NetborgTeam\\P24\\": "src/" }

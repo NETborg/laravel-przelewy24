@@ -15,8 +15,8 @@ class CreateP24TransactionConfirmationsTable extends Migration
     public function up()
     {
         Schema::create('p24_transaction_confirmations', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('p24_transaction_id')->unsigned();
+            $table->uuid('id')->primary();
+            $table->uuid('p24_transaction_id')->index();
             $table->integer('p24_merchant_id')->unsigned()->default(0);
             $table->integer('p24_pos_id')->unsigned()->default(0);
             $table->string('p24_session_id', 100);

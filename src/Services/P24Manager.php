@@ -313,10 +313,15 @@ class P24Manager
         $this->p24_merchant_id = $this->merchantId;
         $this->p24_pos_id = $this->posId;
         $this->p24_api_version = self::API_VERSION;
-        
+
+        if (!isset($this->data['p24_url_return'])) {
+            $this->data['p24_url_return'] = !empty(config('p24.route_return'))
+                ? url(route(config('p24.route_return')), [], true)
+                : url('/', [], true);
+        }
         
         if (!isset($this->data['p24_url_status'])) {
-            $this->data['p24_url_status'] = url(route('getTransactionStatusListener'));
+            $this->data['p24_url_status'] = url(route('getTransactionStatusListener'), [], true);
         }
 
         $client = new Client();

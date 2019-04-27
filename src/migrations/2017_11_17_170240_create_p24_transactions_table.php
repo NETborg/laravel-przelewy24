@@ -14,11 +14,11 @@ class CreateP24TransactionsTable extends Migration
     public function up()
     {
         Schema::create('p24_transactions', function (Blueprint $table) {
-            $table->increments('id');
+            $table->uuid('id')->primary();
             $table->string('p24_session_id', 100);
             $table->integer('p24_amount')->unsigned()->default(0);
             $table->string('p24_currency', 3)->default('PLN');
-            $table->text('p24_description');
+            $table->text('p24_description')->nullable();
             $table->string('p24_email', 50);
             $table->string('p24_client', 50)->nullable();
             $table->string('p24_address', 80)->nullable();
