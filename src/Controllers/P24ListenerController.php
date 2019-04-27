@@ -14,9 +14,8 @@ use Maknz\Slack\Facades\Slack;
  *
  * @author netborg
  */
-class P24ListenerController extends Controller {
-
-
+class P24ListenerController extends Controller
+{
     public function getTransactionStatus(Request $request, P24Manager $manager)
     {
         if (!$manager->isValidSender($request)) {
@@ -47,7 +46,6 @@ class P24ListenerController extends Controller {
                 );
 
                 $verificationResult = $manager->verifyTransactionConfirmation($transactionConfirmation);
-
             } catch (\NetborgTeam\P24\Exceptions\InvalidSignatureException $ex) {
                 if (class_exists(Slack::class)) {
                     Slack::send($ex->getMessage());
@@ -90,6 +88,4 @@ class P24ListenerController extends Controller {
         event();
         return redirect(route(config('p24.route_return')));
     }
-
-
 }

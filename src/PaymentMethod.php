@@ -8,14 +8,11 @@
 
 namespace NetborgTeam\P24;
 
-
 class PaymentMethod extends P24ResponseObject
 {
-
     protected $keys = [
         'id',
         'name',
         'status'
     ];
-
 }

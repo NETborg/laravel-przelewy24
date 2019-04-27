@@ -8,10 +8,8 @@
 
 namespace NetborgTeam\P24;
 
-
 class GeneralError extends P24ResponseObject
 {
-
     protected $keys = [
         'errorCode',
         'errorMessage'
@@ -27,5 +25,4 @@ class GeneralError extends P24ResponseObject
             $this->errorMessage = "It's strange ... error status not received from Przelewy24 ...";
         }
     }
-
 }

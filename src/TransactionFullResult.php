@@ -8,11 +8,9 @@
 
 namespace NetborgTeam\P24;
 
-
 class TransactionFullResult extends P24Response
 {
-
-    function parseResult($result)
+    public function parseResult($result)
     {
         if (is_object($result)) {
             return new TransactionFull($result);
@@ -20,5 +18,4 @@ class TransactionFullResult extends P24Response
 
         return null;
     }
-
 }

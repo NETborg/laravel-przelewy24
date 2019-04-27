@@ -8,12 +8,10 @@
 
 namespace NetborgTeam\P24;
 
-
 use Carbon\Carbon;
 
 class TransactionFull extends P24ResponseObject
 {
-
     protected $keys = [
         'clientName',
         'clientAddress',
@@ -46,5 +44,4 @@ class TransactionFull extends P24ResponseObject
         }
         return null;
     }
-
 }

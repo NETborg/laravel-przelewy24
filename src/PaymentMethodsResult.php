@@ -8,12 +8,9 @@
 
 namespace NetborgTeam\P24;
 
-
 class PaymentMethodsResult extends P24Response
 {
-
-
-    function parseResult($result)
+    public function parseResult($result)
     {
         $methods = [];
 
@@ -27,5 +24,4 @@ class PaymentMethodsResult extends P24Response
 
         return $methods;
     }
-
 }

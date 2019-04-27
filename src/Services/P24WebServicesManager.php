@@ -8,7 +8,6 @@
 
 namespace NetborgTeam\P24\Services;
 
-
 use Carbon\Carbon;
 use NetborgTeam\P24\ArrayOfRefund;
 use NetborgTeam\P24\Exceptions\InvalidCRCException;
@@ -20,14 +19,13 @@ use NetborgTeam\P24\TransactionShortResult;
 
 class P24WebServicesManager
 {
-
     const ENDPOINT_LIVE = "https://secure.przelewy24.pl/external/wsdl/service.php?wsdl"; //"https://secure.przelewy24.pl/external/{merchant_id}.wsdl";
     const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl/external/wsdl/service.php?wsdl"; //"https://sandbox.przelewy24.pl/external/{merchant_id}.wsdl";
     const ENDPOINT_LIVE_CARD = "https://secure.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
     const ENDPOINT_SANDBOX_CARD = "https://sandbox.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
 
 
-    static $CARD_METHODS = [
+    public static $CARD_METHODS = [
         'GetTransactionReference',
         'ChargeCard',
         'RecurringChargeCard',
@@ -111,7 +109,7 @@ class P24WebServicesManager
     /**
      * Gets list of payment methods from Przelewy24 available for your account.
      *
-     * @param string $lang
+     * @param  string               $lang
      * @return PaymentMethodsResult
      */
     public function getPaymentMethods($lang='pl')
@@ -128,7 +126,7 @@ class P24WebServicesManager
     /**
      * Gets short transaction details from Przelewy24 web service.
      *
-     * @param string $sessionId
+     * @param  string                 $sessionId
      * @return TransactionShortResult
      */
     public function getTransactionBySessionId($sessionId)
@@ -145,7 +143,7 @@ class P24WebServicesManager
     /**
      * Gets full transaction details from Przelewy24 web service.
      *
-     * @param string $sessionId
+     * @param  string                $sessionId
      * @return TransactionFullResult
      */
     public function getTransactionFullBySessionId($sessionId)
@@ -162,8 +160,8 @@ class P24WebServicesManager
     /**
      * Issues refunds for provided transaction list.
      *
-     * @param int $batch
-     * @param ArrayOfRefund $refundList
+     * @param  int                     $batch
+     * @param  ArrayOfRefund           $refundList
      * @return TransactionRefundResult
      */
     public function refund($batch, ArrayOfRefund $refundList)
@@ -177,5 +175,4 @@ class P24WebServicesManager
             )
         );
     }
-
 }

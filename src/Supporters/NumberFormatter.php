@@ -6,9 +6,9 @@ namespace NetborgTeam\P24\Supporters;
  *
  * @author Roland Kolodziej <roland@netborg-software.com>
  */
-class NumberFormatter {
-    
-    public static $N_TO_DAYOFWEEK = array(
+class NumberFormatter
+{
+    public static $N_TO_DAYOFWEEK = [
         1 => 'Monday',
         2 => 'Tuesday',
         3 => 'Wendsday',
@@ -16,9 +16,9 @@ class NumberFormatter {
         5 => 'Friday',
         6 => 'Saturday',
         7 => 'Sunday',
-    );
+    ];
     
-    public static $DAYOFWEEK_TO_N = array(
+    public static $DAYOFWEEK_TO_N = [
         'Monday' => 1,
         'Tuesday' => 2,
         'Wendsday' => 3,
@@ -26,11 +26,12 @@ class NumberFormatter {
         'Friday' => 5,
         'Saturday' => 6,
         'Sunday' => 7,
-    );
+    ];
 
 
-    public static function fitFraction($number, $precision=5) {
-        $number = str_replace(array(',', ' '), array('.', ''), $number);
+    public static function fitFraction($number, $precision=5)
+    {
+        $number = str_replace([',', ' '], ['.', ''], $number);
         if (strpos($number, '.') !== false) {
             list($decimal, $fraction) = explode('.', $number);
         } else {
@@ -41,15 +42,12 @@ class NumberFormatter {
         $len = strlen($fraction);
         if ($len > $precision) {
             $fitted = round(floatval($number), $precision);
-        }
-        else if ($len < $precision) {
+        } elseif ($len < $precision) {
             $fitted = $decimal.'.'.str_pad($fraction, $precision, '0');
-        } 
-        else {
+        } else {
             $fitted = $number;
         }
         
         return $fitted;
     }
-    
 }

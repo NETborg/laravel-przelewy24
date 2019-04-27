@@ -8,7 +8,6 @@
 
 namespace NetborgTeam\P24;
 
-
 abstract class P24ResponseObject
 {
 
@@ -31,13 +30,13 @@ abstract class P24ResponseObject
     {
         if ($response) {
             if (is_object($response)) {
-                foreach($this->keys as $key) {
+                foreach ($this->keys as $key) {
                     if (isset($response->{$key})) {
                         $this->{$key} = $response->{$key};
                     }
                 }
             } elseif (is_array($response)) {
-                foreach($this->keys as $key) {
+                foreach ($this->keys as $key) {
                     if (isset($response[$key])) {
                         $this->{$key} = $response[$key];
                     }
@@ -68,5 +67,4 @@ abstract class P24ResponseObject
     {
         return $this->data;
     }
-
 }

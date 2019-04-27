@@ -8,11 +8,9 @@
 
 namespace NetborgTeam\P24;
 
-
 class TransactionShortResult extends P24Response
 {
-
-    function parseResult($result)
+    public function parseResult($result)
     {
         if (is_object($result)) {
             return new TransactionShort($result);
@@ -20,5 +18,4 @@ class TransactionShortResult extends P24Response
 
         return null;
     }
-
 }

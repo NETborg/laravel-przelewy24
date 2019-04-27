@@ -8,10 +8,8 @@
 
 namespace NetborgTeam\P24;
 
-
 class SingleRefund extends P24ResponseObject
 {
-
     protected $keys = [
         'orderId',
         'sessionId',
@@ -19,5 +17,4 @@ class SingleRefund extends P24ResponseObject
         'status',
         'error',
     ];
-
 }

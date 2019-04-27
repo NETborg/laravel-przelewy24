@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class P24TransactionConfirmation extends Model
 {
-    
     const STATUS_NEW = "new";
     const STATUS_INVALID_TRANSACTION_SIGNATURE = "invalid_transaction_signature";
     const STATUS_AWAITING_CONFIRMATION_VERIFICATION = "awaiting_confirmation_verification";
@@ -35,16 +34,16 @@ class P24TransactionConfirmation extends Model
     
     /**
      * Builds a P24TransactionConfirmation object from Request.
-     * 
-     * @param Request $request
-     * @param array $keys
+     *
+     * @param  Request                                     $request
+     * @param  array                                       $keys
      * @return \NetborgTeam\P24\P24TransactionConfirmation
      */
     public static function makeInstance(Request $request, array $keys)
     {
         $confirmation = new P24TransactionConfirmation();
         
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             if ($value = $request->input($key, null)) {
                 $confirmation->{$key} = $value;
             }
@@ -65,8 +64,8 @@ class P24TransactionConfirmation extends Model
     
     /**
      * Confirms positive verification of this Transaction Confirmation.
-     * 
-     * @param string $sign
+     *
+     * @param  string $sign
      * @return $this
      */
     public function confirmVerified($sign)

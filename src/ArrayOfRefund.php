@@ -10,7 +10,6 @@ namespace NetborgTeam\P24;
 
 class ArrayOfRefund
 {
-
     protected $data = [];
 
 
@@ -19,7 +18,7 @@ class ArrayOfRefund
      * If another object with provided sessionId already exists,
      * will be replaced by this instance.
      *
-     * @param SingleRefund $refund
+     * @param  SingleRefund  $refund
      * @return ArrayOfRefund
      */
     public function add(SingleRefund $refund)
@@ -35,9 +34,9 @@ class ArrayOfRefund
     /**
      * Creates and adds SingleRefund to an array based on values provided.
      *
-     * @param string $sessionId
-     * @param int $orderId
-     * @param int $amount
+     * @param  string        $sessionId
+     * @param  int           $orderId
+     * @param  int           $amount
      * @return ArrayOfRefund
      */
     public function addByKeys($sessionId, $orderId, $amount)
@@ -45,7 +44,7 @@ class ArrayOfRefund
         $this->add(new SingleRefund([
             'sessionId' => $sessionId,
             'orderId' => (int) $orderId,
-            'amount' => strpos(str_replace(',','.',$amount), '.')
+            'amount' => strpos(str_replace(',', '.', $amount), '.')
                 ? (int) floor($amount * 100)
                 : (int) $amount,
         ]));
@@ -66,7 +65,7 @@ class ArrayOfRefund
             $sessionId = $subject;
         }
 
-        foreach($this->data as $i => $refund) {
+        foreach ($this->data as $i => $refund) {
             if ($refund->sessionId == $sessionId) {
                 unset($this->data[$i]);
             }
@@ -76,7 +75,7 @@ class ArrayOfRefund
     /**
      * Searches and returns SingleRefund by its index in array or sessionId.
      *
-     * @param int|string $subject
+     * @param  int|string        $subject
      * @return SingleRefund|null
      */
     public function get($subject)
@@ -86,7 +85,7 @@ class ArrayOfRefund
                 return $this->data[$subject];
             }
         } elseif (is_string($subject)) {
-            foreach($this->data as $i => $refund) {
+            foreach ($this->data as $i => $refund) {
                 if ($refund->sessionId == $subject) {
                     return $refund;
                 }
@@ -99,7 +98,7 @@ class ArrayOfRefund
     /**
      * Returns `true` if searched refund exists in array or `false` otherwise.
      *
-     * @param SingleRefund|string $subject
+     * @param  SingleRefund|string $subject
      * @return bool
      */
     public function has($subject)
@@ -110,7 +109,7 @@ class ArrayOfRefund
             $sessionId = $subject;
         }
 
-        foreach($this->data as $i => $refund) {
+        foreach ($this->data as $i => $refund) {
             if ($refund->sessionId == $sessionId) {
                 return true;
             }
@@ -128,10 +127,9 @@ class ArrayOfRefund
     public function toArray()
     {
         $array = [];
-        foreach($this->data as $refund) {
+        foreach ($this->data as $refund) {
             $array[] = $refund->toArray();
         }
         return $array;
     }
-
 }

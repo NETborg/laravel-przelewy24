@@ -7,6 +7,6 @@ namespace NetborgTeam\P24\Exceptions;
  *
  * @author netborg
  */
-class P24ConnectionException extends \Exception {
-    
+class P24ConnectionException extends \Exception
+{
 }

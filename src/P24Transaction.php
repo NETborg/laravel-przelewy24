@@ -12,8 +12,8 @@ class P24Transaction extends Model
     
     protected $guarded = [
         'token',
-        'created_at', 
-        'updated_at', 
+        'created_at',
+        'updated_at',
     ];
     
     

@@ -8,7 +8,6 @@
 
 namespace NetborgTeam\P24;
 
-
 abstract class P24Response
 {
     /**
@@ -51,7 +50,7 @@ abstract class P24Response
      * @param $result
      * @return mixed
      */
-    abstract function parseResult($result);
+    abstract public function parseResult($result);
 
 
     /**
@@ -84,5 +83,4 @@ abstract class P24Response
     {
         return $this->result;
     }
-
 }

@@ -8,15 +8,13 @@
 
 namespace NetborgTeam\P24;
 
-
 class TransactionRefundResult extends P24Response
 {
-
-    function parseResult($result)
+    public function parseResult($result)
     {
         $refunds = [];
         if (is_array($result)) {
-            foreach($result as $r) {
+            foreach ($result as $r) {
                 $refunds[] = new SingleRefund($r);
             }
         } elseif (is_object($result)) {
@@ -25,5 +23,4 @@ class TransactionRefundResult extends P24Response
 
         return $refunds;
     }
-
 }

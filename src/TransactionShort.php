@@ -8,12 +8,10 @@
 
 namespace NetborgTeam\P24;
 
-
 use Carbon\Carbon;
 
 class TransactionShort extends P24ResponseObject
 {
-
     protected $keys = [
         'orderId',
         'orderIdFull',
@@ -41,5 +39,4 @@ class TransactionShort extends P24ResponseObject
         }
         return null;
     }
-
 }
