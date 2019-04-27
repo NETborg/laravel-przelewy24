@@ -11,10 +11,24 @@
         }
     ],
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "php-curl-class/php-curl-class": "^8.0"
+        "php": ">=5.6.4",
+        "ext-soap": "*",
+        "guzzlehttp/guzzle": "^6.3",
+        "illuminate/support": "^5.4",
+        "illuminate/http": "^5.4",
+        "illuminate/database": "^5.4"
     },
     "autoload": {
         "psr-4": { "NetborgTeam\\P24\\": "src/" }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "NetborgTeam\\P24\\Providers\\P24Provider"
+            ],
+            "aliases": {}
+        }
     }
 }
