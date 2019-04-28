@@ -10,5 +10,9 @@ class P24TransactionObserver
         if (!$transaction->id) {
             $transaction->id = P24Transaction::generateUid();
         }
+
+        if (!$transaction->p24_url_return) {
+            $transaction->p24_url_return = url(route('getTransactionReturn', [ 'transactionId' => $transaction->id ]), [], true);
+        }
     }
 }

@@ -409,9 +409,7 @@ class P24Manager
         $this->p24_api_version = self::API_VERSION;
 
         if (!isset($this->data['p24_url_return'])) {
-            $this->data['p24_url_return'] = !empty(config('p24.route_return'))
-                ? url(route(config('p24.route_return')), [], true)
-                : url('/', [], true);
+            $this->data['p24_url_return'] = url(route('getTransactionReturn', ['transactionId' => $transaction->id]), [], true);
         }
         
         if (!isset($this->data['p24_url_status'])) {

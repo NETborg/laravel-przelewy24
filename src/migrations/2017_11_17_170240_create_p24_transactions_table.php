@@ -28,7 +28,7 @@ class CreateP24TransactionsTable extends Migration
             $table->string('p24_phone', 12)->nullable();
             $table->string('p24_language', 2)->default(config('app.locale'));
             $table->integer('p24_method')->unsigned()->nullable();
-            $table->string('p24_url_return');
+            $table->string('p24_url_return')->nullable();
             $table->string('p24_url_status')->nullable();
             $table->integer('p24_time_limit')->default(0);
             $table->integer('p24_wait_for_result')->default(0);

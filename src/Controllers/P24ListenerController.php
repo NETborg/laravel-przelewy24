@@ -4,6 +4,13 @@ namespace NetborgTeam\P24\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use NetborgTeam\P24\Events\P24TransactionCancelledEvent;
+use NetborgTeam\P24\Events\P24TransactionConfirmationConnectionErrorEvent;
+use NetborgTeam\P24\Events\P24TransactionConfirmationInvalidParameterEvent;
+use NetborgTeam\P24\Events\P24TransactionConfirmationInvalidSenderEvent;
+use NetborgTeam\P24\Events\P24TransactionConfirmationInvalidSignatureEvent;
+use NetborgTeam\P24\Events\P24TransactionConfirmationSuccessEvent;
+use NetborgTeam\P24\GeneralError;
 use NetborgTeam\P24\Services\P24Manager;
 use NetborgTeam\P24\P24Transaction;
 use NetborgTeam\P24\P24TransactionConfirmation;
@@ -18,16 +25,21 @@ class P24ListenerController extends Controller
 {
     public function getTransactionStatus(Request $request, P24Manager $manager)
     {
+        $transactionConfirmation = $manager->parseTransactionConfirmation($request);
+
         if (!$manager->isValidSender($request)) {
             if (class_exists(Slack::class)) {
                 Slack::send('Received P24 Transaction Confirmation from INVALID SENDER!');
             }
 
-            event(); // @TODO -> dodac event
-            die('invalid sender');
+            event(new P24TransactionConfirmationInvalidSenderEvent(
+                $transactionConfirmation,
+                $request->getClientIp()
+            ));
+
+            return new Response();
         }
 
-        $transactionConfirmation = $manager->parseTransactionConfirmation($request);
         if (class_exists(Slack::class)) {
             Slack::send($transactionConfirmation->toJson());
         }
@@ -50,20 +62,34 @@ class P24ListenerController extends Controller
                 if (class_exists(Slack::class)) {
                     Slack::send($ex->getMessage());
                 }
-                event(); // @TODO -> dodac event
-                return response();
+                event(new P24TransactionConfirmationInvalidSignatureEvent($transactionConfirmation));
+
+                return new Response();
             } catch (\NetborgTeam\P24\Exceptions\InvalidTransactionParameterException $ex) {
                 if (class_exists(Slack::class)) {
                     Slack::send($ex->getMessage());
                 }
-                event(); // @TODO -> dodac event
-                return response();
+
+                event(new P24TransactionConfirmationInvalidParameterEvent(
+                    $transactionConfirmation,
+                    $ex->getParameterName(),
+                    $ex->getExpectedValue(),
+                    $ex->getReceivedValue()
+                ));
+
+                return new Response();
             } catch (\NetborgTeam\P24\Exceptions\P24ConnectionException $ex) {
                 if (class_exists(Slack::class)) {
                     Slack::send($ex->getMessage());
                 }
-                event(); // @TODO -> dodac event
-                return response();
+
+                event(new P24TransactionConfirmationConnectionErrorEvent(
+                    $transactionConfirmation,
+                    $ex->getCode(),
+                    $ex->getMessage()
+                ));
+
+                return new Response();
             }
 
             if (isset($verificationResult['error']) && $verificationResult['error'] === 0) {
@@ -76,16 +102,26 @@ class P24ListenerController extends Controller
                         .number_format($transactionConfirmation->p24_amount / 100, 2)
                         ." $transactionConfirmation->p24_currency.");
                 }
-                event(); // @TODO -> dodac event
+                event(new P24TransactionConfirmationSuccessEvent(
+                    $transaction,
+                    $transactionConfirmation
+                ));
             }
         }
 
         return new Response();
     }
 
-    public function getReturn(Request $request)
+    public function getReturn($transactionId=null)
     {
-        event(); // TODO -> dodac event
-        return redirect(route(config('p24.route_return')));
+        if ($transactionId) {
+            $transaction = P24Transaction::find($transactionId);
+
+            if ($transaction instanceof P24Transaction) {
+                event(new P24TransactionCancelledEvent($transaction));
+            }
+        }
+
+        return redirect();
     }
 }

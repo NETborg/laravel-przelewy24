@@ -8,7 +8,7 @@ This library is still in early stage of development. Some functionalities may no
 ### Requirements ###
 * PHP 5.6+
 * Laravel 5.4+
-* PHP modules: php-soap
+* PHP modules: php-soap, php-json
 * optionally [netborgteam/laravel-slack](https://bitbucket.org/netborgteam/laravel-slack) (for getting notification about payment events on Slack's channel)
 
 ### Installation ###
@@ -59,13 +59,34 @@ return [
     'mode' => env('P24_MODE', 'sandbox'),
     
     /*  
-        provide route name where Client shoud be redirected 
+        provide route name (don't use URL here) where Client shoud be redirected 
         on transaction cancellation (you can override it on transaction registration)
     */
     'route_return' => null,
 ];
 ```
 That's it. You can start to manage payments from Przelewy24.
+
+### Events ###
+
+Although, all major transaction events are supported and maintained out of the box, you may want to subscribe to various events and perform some custom actions. For this purpose [create and register](https://laravel.com/docs/5.8/events#registering-events-and-listeners) your custom event listeners.
+Subscribe to any of the events listed below:
+
+```php
+    \NetborgTeam\P24\Events\P24TransactionCancelledEvent::class
+    \NetborgTeam\P24\Events\P24TransactionConfirmationConnectionErrorEvent::class
+    \NetborgTeam\P24\Events\P24TransactionConfirmationInvalidParameterEvent::class
+    \NetborgTeam\P24\Events\P24TransactionConfirmationInvalidSenderEvent::class
+    \NetborgTeam\P24\Events\P24TransactionConfirmationInvalidSignatureEvent::class
+    \NetborgTeam\P24\Events\P24TransactionConfirmationSuccessEvent::class
+```
+
+- `\NetborgTeam\P24\Events\P24TransactionCancelledEvent::class`: This event is being triggered when user cancels transaction and is being redirected back to the application. This event **will not be be triggered** if you have overridden `p24_url_return` parameter with your custom URL on transaction registration.
+- `\NetborgTeam\P24\Events\P24TransactionConfirmationConnectionErrorEvent::class`: This event is being triggered if there was a problem with connection to _Przelewy24_'s servers at the moment an app intended to send back transaction confirmation for verification.
+- `\NetborgTeam\P24\Events\P24TransactionConfirmationInvalidParameterEvent::class`: This event may be triggered very occasionally if any of core Transaction parameter values don't match the values of Transaction Confirmation received from `Przelewy24` servers. Could be a signal of a fraud attempt.
+- `\NetborgTeam\P24\Events\P24TransactionConfirmationInvalidSenderEvent::class`: This event may be triggered very occasionally in case if Transaction Confirmation was send from IP address not listed [here](https://docs.przelewy24.pl/P%C5%82atno%C5%9Bci_internetowe#2.8_Adresy_IP_serwer.C3.B3w).
+- `\NetborgTeam\P24\Events\P24TransactionConfirmationInvalidSignatureEvent::class`: This event is being triggered if Transaction Confirmation's signature is invalid. Could be a signal of a fraud attempt.
+- `\NetborgTeam\P24\Events\P24TransactionConfirmationSuccessEvent::class`: This event is being triggered when Transaction is successfully verified and confirmed with `Przelewy24` servers. It is recommended to subscribe to this event for custom processing of `confirmed transactions`.
 
 ### Examples of usage ###
 
@@ -79,7 +100,7 @@ public function registerTransaction(
 ) { 
 
 	// create new Transaction (for attribute reference please see P24 API docs)
-	$transaction = new \NetborgTeam\P24\P24Transaction([
+	$transaction = \NetborgTeam\P24\P24Transaction::create([
 	// recommended way to provide session ID via supporting method
 	    'p24_session_id' => \NetborgTeam\P24\P24Transaction::makeUniqueId($request->session()->getId()),
 	    'p24_amount' => 19900,
@@ -87,7 +108,6 @@ public function registerTransaction(
 	    'p24_description' => 'Transaction description',
 	    'p24_email' => 'client@netborg-software.com',
 	    'p24_country' => 'PL',
-	    'p24_url_return' => route('home'),
 	]);
 
 	try {
@@ -116,8 +136,8 @@ public function registerTransaction(
 }
 ```
 
-Uppon successfull payment, Przelewy24 will send notification to your listener.
-No worries! Unless you have overrided `p24_url_status` with your custom URL, your app will handle all required checks for you. As default you will receive transaction status notifications on `https://your-app-host.com/p24/status` URL.
+Upon successful payment, Przelewy24 will send notification to your listener.
+No worries! Unless you have overridden `p24_url_status` with your custom URL, your app will handle all required checks for you. As default you will receive transaction status notifications on URL `https://[YOUR_DOMAIN]/p24/status`.
 
 #### Przelewy24 Web Service calls ####
 To call any of Przelewy24's Web Service methods in your app, use `P24WebServicesManager` service.
