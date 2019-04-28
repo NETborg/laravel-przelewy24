@@ -73,7 +73,7 @@ Although, all major transaction events are supported and maintained out of the b
 Subscribe to any of the events listed below:
 
 ```php
-    \NetborgTeam\P24\Events\P24TransactionCancelledEvent::class
+    \NetborgTeam\P24\Events\P24TransactionUserReturnedEvent::class
     \NetborgTeam\P24\Events\P24TransactionConfirmationConnectionErrorEvent::class
     \NetborgTeam\P24\Events\P24TransactionConfirmationInvalidParameterEvent::class
     \NetborgTeam\P24\Events\P24TransactionConfirmationInvalidSenderEvent::class
@@ -81,7 +81,7 @@ Subscribe to any of the events listed below:
     \NetborgTeam\P24\Events\P24TransactionConfirmationSuccessEvent::class
 ```
 
-- `\NetborgTeam\P24\Events\P24TransactionCancelledEvent::class`: This event is being triggered when user cancels transaction and is being redirected back to the application. This event **will not be be triggered** if you have overridden `p24_url_return` parameter with your custom URL on transaction registration.
+- `\NetborgTeam\P24\Events\P24TransactionUserReturnedEvent::class`: This event is being triggered whenever user cancels or finishes payment for transaction and is being redirected back to the application. This event **will not be be triggered** if you have overridden `p24_url_return` parameter with your custom URL on transaction registration.
 - `\NetborgTeam\P24\Events\P24TransactionConfirmationConnectionErrorEvent::class`: This event is being triggered if there was a problem with connection to _Przelewy24_'s servers at the moment an app intended to send back transaction confirmation for verification.
 - `\NetborgTeam\P24\Events\P24TransactionConfirmationInvalidParameterEvent::class`: This event may be triggered very occasionally if any of core Transaction parameter values don't match the values of Transaction Confirmation received from `Przelewy24` servers. Could be a signal of a fraud attempt.
 - `\NetborgTeam\P24\Events\P24TransactionConfirmationInvalidSenderEvent::class`: This event may be triggered very occasionally in case if Transaction Confirmation was send from IP address not listed [here](https://docs.przelewy24.pl/P%C5%82atno%C5%9Bci_internetowe#2.8_Adresy_IP_serwer.C3.B3w).

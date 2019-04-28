@@ -3,6 +3,8 @@
 namespace NetborgTeam\P24\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use NetborgTeam\P24\Observers\P24TransactionObserver;
+use NetborgTeam\P24\P24Transaction;
 use NetborgTeam\P24\Services\P24Manager;
 use NetborgTeam\P24\Services\P24WebServicesManager;
 
@@ -39,5 +41,12 @@ class P24Provider extends ServiceProvider
         
         // load P24 migrations
         $this->loadMigrationsFrom(__DIR__.'/../migrations');
+
+        $this->registerObservers();
+    }
+
+    private function registerObservers()
+    {
+        P24Transaction::observe(P24TransactionObserver::class);
     }
 }

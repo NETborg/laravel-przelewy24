@@ -6,7 +6,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
 use NetborgTeam\P24\P24Transaction;
 
-class P24TransactionCancelledEvent
+class P24TransactionUserReturnedEvent
 {
     use Dispatchable, SerializesModels;
 

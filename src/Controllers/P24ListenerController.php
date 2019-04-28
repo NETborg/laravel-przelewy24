@@ -4,7 +4,7 @@ namespace NetborgTeam\P24\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use NetborgTeam\P24\Events\P24TransactionCancelledEvent;
+use NetborgTeam\P24\Events\P24TransactionUserReturnedEvent;
 use NetborgTeam\P24\Events\P24TransactionConfirmationConnectionErrorEvent;
 use NetborgTeam\P24\Events\P24TransactionConfirmationInvalidParameterEvent;
 use NetborgTeam\P24\Events\P24TransactionConfirmationInvalidSenderEvent;
@@ -118,7 +118,7 @@ class P24ListenerController extends Controller
             $transaction = P24Transaction::find($transactionId);
 
             if ($transaction instanceof P24Transaction) {
-                event(new P24TransactionCancelledEvent($transaction));
+                event(new P24TransactionUserReturnedEvent($transaction));
             }
         }
 
