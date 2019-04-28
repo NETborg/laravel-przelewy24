@@ -19,11 +19,18 @@ abstract class P24Response
      */
     protected $error;
 
+    /**
+     * @var array|object|null
+     */
+    protected $response;
+
 
 
 
     public function __construct($response)
     {
+        $this->response = $response;
+
         if (is_object($response)) {
             if (isset($response->result)) {
                 $this->result = $this->parseResult($response->result);
@@ -82,5 +89,15 @@ abstract class P24Response
     public function result()
     {
         return $this->result;
+    }
+
+    /**
+     * Returns response data.
+     *
+     * @return array|object|null
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 }

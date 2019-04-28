@@ -8,6 +8,13 @@
 
 namespace NetborgTeam\P24;
 
+/**
+ * Class GeneralError
+ * @package NetborgTeam\P24
+ *
+ * @property int $errorCode
+ * @property string $errorMessage
+ */
 class GeneralError extends P24ResponseObject
 {
     protected $keys = [

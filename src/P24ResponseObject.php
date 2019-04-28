@@ -8,7 +8,10 @@
 
 namespace NetborgTeam\P24;
 
-abstract class P24ResponseObject
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
+
+abstract class P24ResponseObject implements Arrayable, Jsonable
 {
 
     /**
@@ -25,9 +28,16 @@ abstract class P24ResponseObject
      */
     protected $data = [];
 
+    /**
+     * @var array|object|null
+     */
+    protected $response;
+
 
     public function __construct($response=null)
     {
+        $this->response = $response;
+
         if ($response) {
             if (is_object($response)) {
                 foreach ($this->keys as $key) {
@@ -62,9 +72,42 @@ abstract class P24ResponseObject
         return null;
     }
 
+    /**
+     * Returns response data.
+     *
+     * @return array|object|null
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
 
+
+    /**
+     * @return array
+     */
     public function toArray()
     {
-        return $this->data;
+        $out = [];
+
+        foreach ($this->data as $key => $value) {
+            if (is_object($value) && $value instanceof Arrayable) {
+                $out[$key] = $value->toArray();
+                continue;
+            }
+
+            $out[$key] = $value;
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param  int         $options
+     * @return string|void
+     */
+    public function toJson($options = 0)
+    {
+        return json_encode($this->toArray(), $options);
     }
 }

@@ -2,6 +2,7 @@
 namespace NetborgTeam\P24\Services;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use NetborgTeam\P24\Exceptions\InvalidMerchantIdException;
 use NetborgTeam\P24\Exceptions\InvalidCRCException;
 use NetborgTeam\P24\Exceptions\InvalidSenderException;
@@ -9,6 +10,7 @@ use NetborgTeam\P24\Exceptions\InvalidSignatureException;
 use NetborgTeam\P24\Exceptions\P24ConnectionException;
 use NetborgTeam\P24\Exceptions\InvalidTransactionException;
 use NetborgTeam\P24\Exceptions\InvalidTransactionParameterException;
+use NetborgTeam\P24\GeneralError;
 use NetborgTeam\P24\P24Transaction;
 use NetborgTeam\P24\P24TransactionConfirmation;
 use Illuminate\Http\Request;
@@ -26,8 +28,10 @@ class P24Manager
     const PAYMENT_SANDBOX_REDIRECT_URL = "https://sandbox.przelewy24.pl/trnRequest/{token}";
 
     const API_VERSION = "3.2";
-    
-    
+
+    /**
+     * @var String[]
+     */
     private static $TRANSACTION_KEYS = [
         'p24_merchant_id',
         'p24_pos_id',
@@ -55,7 +59,10 @@ class P24Manager
         'p24_sign',
         'p24_encoding',
     ];
-    
+
+    /**
+     * @var String[]
+     */
     private static $TRANSACTION_ITEM_KEYS = [
         'p24_name',
         'p24_description',
@@ -63,7 +70,10 @@ class P24Manager
         'p24_price',
         'p24_number'
     ];
-    
+
+    /**
+     * @var String[]
+     */
     private static $CONFIRMATION_KEYS = [
         'p24_merchant_id',
         'p24_pos_id',
@@ -75,7 +85,10 @@ class P24Manager
         'p24_statement',
         'p24_sign'
     ];
-    
+
+    /**
+     * @var String[]
+     */
     private static $CONFIRMATION_VERIFY_KEYS = [
         'p24_merchant_id',
         'p24_pos_id',
@@ -85,26 +98,64 @@ class P24Manager
         'p24_order_id',
         'p24_sign'
     ];
-    
+
+    /**
+     * @var String[]
+     */
     private static $ALLOWED_IPS = [
         '91.216.191.181',
         '91.216.191.182',
         '91.216.191.183',
         '91.216.191.184',
-        '91.216.191.185'
+        '91.216.191.185',
+        '92.43.119.144',
+        '92.43.119.145',
+        '92.43.119.146',
+        '92.43.119.147',
+        '92.43.119.148',
+        '92.43.119.149',
+        '92.43.119.150',
+        '92.43.119.151',
+        '92.43.119.152',
+        '92.43.119.153',
+        '92.43.119.154',
+        '92.43.119.155',
+        '92.43.119.156',
+        '92.43.119.157',
+        '92.43.119.158',
+        '92.43.119.159',
     ];
 
 
-
-
-
-
+    /**
+     * @var int
+     */
     private $merchantId;
+
+    /**
+     * @var int
+     */
     private $posId;
+
+    /**
+     * @var string
+     */
     private $crc;
+
+    /**
+     * @var string
+     */
     private $endpoint;
-    
+
+    /**
+     * @var array
+     */
     protected $data = [];
+
+    /**
+     * @var Response|null
+     */
+    protected $testConnectionResponse;
     
     
     
@@ -125,6 +176,11 @@ class P24Manager
             $this->endpoint = self::ENDPOINT_LIVE;
         } else {
             $this->endpoint = self::ENDPOINT_SANDBOX;
+        }
+
+        $testConnectionResult = $this->testConnection();
+        if ($testConnectionResult instanceof GeneralError) {
+            throw new P24ConnectionException($testConnectionResult->errorMessage, $testConnectionResult->errorCode);
         }
     }
     
@@ -147,7 +203,40 @@ class P24Manager
             unset($this->data[$name]);
         }
     }
-    
+
+    /**
+     * Tests connection to P24 server.
+     *
+     * @return bool
+     */
+    public function testConnection()
+    {
+        $data = [
+            'p24_merchant_id' => $this->merchantId,
+            'p24_pos_id' => $this->posId,
+            'p24_sign' => $this->sign($this->makeTestConnectionPayloadString()),
+        ];
+
+        $client = new Client();
+        $this->testConnectionResponse = $client->post($this->endpoint.'/testConnection', [ "form_params" => $data]);
+
+        return $this->testConnectionResponse->getStatusCode() === 200
+            && preg_match("/^error=0$/i", $this->testConnectionResponse->getBody()->getContents()) > 0;
+    }
+
+    /**
+     * @return GeneralError|null
+     */
+    public function getConnectionError()
+    {
+        if ($this->testConnectionResponse instanceof Response) {
+            return $this->parseErrorResponse($this->testConnectionResponse->getBody()->getContents());
+        }
+
+        return null;
+    }
+
+
     /**
      * Clears Transaction data.
      *
@@ -174,6 +263,11 @@ class P24Manager
 
     /**
      * Get P24WebServicesManager instance to execute requests to P24 Web Services.
+     *
+     * @throws InvalidCRCException
+     * @throws InvalidMerchantIdException
+     * @throws P24ConnectionException
+     * @throws \SoapFault
      *
      * @return P24WebServicesManager|null
      */
@@ -244,7 +338,7 @@ class P24Manager
                 $confirmation->save();
 
                 throw new InvalidSignatureException(
-                    md5($this->makeTransactionConfirmationSignatureString($confirmation)),
+                    $this->sign($this->makeTransactionConfirmationPayloadString($confirmation)),
                     $sign
                 );
             }
@@ -373,16 +467,29 @@ class P24Manager
     
     protected function signTransaction(P24Transaction $transaction)
     {
-        $transaction->p24_sign = md5($this->makeTransactionSignatureString($transaction));
+        $transaction->p24_sign = $this->sign($this->makeTransactionPayloadString($transaction));
         if (!$transaction->id) {
             $transaction->save();
         }
         
         return $transaction->p24_sign;
     }
+
+    protected function sign($payloadString)
+    {
+        return md5($payloadString);
+    }
+
+    protected function makeTestConnectionPayloadString()
+    {
+        return implode('|', [
+            $this->posId,
+            $this->crc
+        ]);
+    }
     
     
-    protected function makeTransactionSignatureString(P24Transaction $transaction)
+    protected function makeTransactionPayloadString(P24Transaction $transaction)
     {
         return implode('|', [
             $transaction->p24_session_id,
@@ -393,7 +500,7 @@ class P24Manager
         ]);
     }
     
-    protected function makeTransactionConfirmationSignatureString(P24TransactionConfirmation $confirmation)
+    protected function makeTransactionConfirmationPayloadString(P24TransactionConfirmation $confirmation)
     {
         return implode('|', [
             $confirmation->p24_session_id,
@@ -406,13 +513,13 @@ class P24Manager
     
     protected function isValidTransactionSignature(P24Transaction $transaction, $sign)
     {
-        $expected = md5($this->makeTransactionSignatureString($transaction));
+        $expected = $this->sign($this->makeTransactionPayloadString($transaction));
         return $expected === $sign;
     }
     
     protected function isValidTransactionConfirmationSignature(P24TransactionConfirmation $confirmation, $sign)
     {
-        $expected = md5($this->makeTransactionConfirmationSignatureString($confirmation));
+        $expected = $this->sign($this->makeTransactionConfirmationPayloadString($confirmation));
         return $expected === $sign;
     }
     
@@ -450,6 +557,26 @@ class P24Manager
         }
         
         return $params;
+    }
+
+    /**
+     * @param $response
+     * @return GeneralError
+     */
+    public function parseErrorResponse($response)
+    {
+        preg_match("/^error=(\d+)&errorMessage=(.*)$/", $response, $matches);
+        if (count($matches) == 3) {
+            return new GeneralError([
+                'errorCode' => (int) $matches[1],
+                'errorMessage' => $matches[2]
+            ]);
+        }
+
+        return new GeneralError([
+            'errorCode' => -1,
+            'errorMessage' => "Unable to parse response string: `$response`",
+        ]);
     }
     
     protected function parseRegistrationResponse($response)

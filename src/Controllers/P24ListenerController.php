@@ -85,7 +85,7 @@ class P24ListenerController extends Controller
 
     public function getReturn(Request $request)
     {
-        event();
+        event(); // TODO -> dodac event
         return redirect(route(config('p24.route_return')));
     }
 }

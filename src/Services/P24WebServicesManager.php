@@ -8,10 +8,10 @@
 
 namespace NetborgTeam\P24\Services;
 
-use Carbon\Carbon;
 use NetborgTeam\P24\ArrayOfRefund;
 use NetborgTeam\P24\Exceptions\InvalidCRCException;
 use NetborgTeam\P24\Exceptions\InvalidMerchantIdException;
+use NetborgTeam\P24\Exceptions\P24ConnectionException;
 use NetborgTeam\P24\PaymentMethodsResult;
 use NetborgTeam\P24\TransactionFullResult;
 use NetborgTeam\P24\TransactionRefundResult;
@@ -19,8 +19,13 @@ use NetborgTeam\P24\TransactionShortResult;
 
 class P24WebServicesManager
 {
-    const ENDPOINT_LIVE = "https://secure.przelewy24.pl/external/wsdl/service.php?wsdl"; //"https://secure.przelewy24.pl/external/{merchant_id}.wsdl";
-    const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl/external/wsdl/service.php?wsdl"; //"https://sandbox.przelewy24.pl/external/{merchant_id}.wsdl";
+//    const ENDPOINT_LIVE = "https://secure.przelewy24.pl/external/wsdl/service.php?wsdl"; //"https://secure.przelewy24.pl/external/{merchant_id}.wsdl";
+//    const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl/external/wsdl/service.php?wsdl"; //"https://sandbox.przelewy24.pl/external/{merchant_id}.wsdl";
+//    const ENDPOINT_LIVE_CARD = "https://secure.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
+//    const ENDPOINT_SANDBOX_CARD = "https://sandbox.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
+
+    const ENDPOINT_LIVE = "https://secure.przelewy24.pl/external/{merchant_id}.wsdl"; //"https://secure.przelewy24.pl/external/{merchant_id}.wsdl";
+    const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl/external/{merchant_id}.wsdl"; //"https://sandbox.przelewy24.pl/external/{merchant_id}.wsdl";
     const ENDPOINT_LIVE_CARD = "https://secure.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
     const ENDPOINT_SANDBOX_CARD = "https://sandbox.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
 
@@ -40,7 +45,13 @@ class P24WebServicesManager
     private $soap;
 
 
-
+    /**
+     * P24WebServicesManager constructor.
+     * @throws InvalidCRCException
+     * @throws InvalidMerchantIdException
+     * @throws P24ConnectionException
+     * @throws \SoapFault
+     */
     public function __construct()
     {
         $this->merchantId = config('p24.merchant_id', 0);
@@ -56,6 +67,9 @@ class P24WebServicesManager
         }
 
         $this->soap = new \SoapClient($this->endpoint());
+        if (!$this->testAccess()) {
+            throw new P24ConnectionException("Access denied!", 1);
+        }
     }
 
 
@@ -132,7 +146,7 @@ class P24WebServicesManager
     public function getTransactionBySessionId($sessionId)
     {
         return new TransactionShortResult(
-            $this->soap->TrnBySessionId(
+            $this->soap->GetTransactionBySessionId(
                 $this->merchantId,
                 $this->apiKey,
                 $sessionId
@@ -154,6 +168,17 @@ class P24WebServicesManager
                 $this->apiKey,
                 $sessionId
             )
+        );
+    }
+
+    public function getVerifyTransactionResult($orderId, $sessionId, $amount)
+    {
+        return $this->soap->VerifyTransaction(
+            $this->merchantId,
+            $this->apiKey,
+            $orderId,
+            $sessionId,
+            $amount
         );
     }
 
