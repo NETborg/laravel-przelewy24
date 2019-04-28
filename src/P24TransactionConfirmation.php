@@ -6,6 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
+/**
+ * Class P24TransactionConfirmation
+ * @package NetborgTeam\P24
+ *
+ * @property int $id
+ * @property int $p24_transaction_id
+ * @property int $p24_merchant_id
+ * @property int $p24_pos_id
+ * @property string $p24_session_id
+ * @property int $p24_amount
+ * @property string $p24_currency
+ * @property int $p24_order_id
+ * @property int $p24_method
+ * @property string|null $p24_statement
+ * @property string $p24_sign
+ * @property string $verification_status
+ * @property string|null verification_sign
+ * @property Carbon|null $verified_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ */
 class P24TransactionConfirmation extends Model
 {
     const STATUS_NEW = "new";
@@ -21,12 +42,14 @@ class P24TransactionConfirmation extends Model
     
     
     protected $table = "p24_transaction_confirmations";
-    protected $dates = [ 'verified_at' ];
+    protected $dates = [ 'verified_at', 'created_at', 'updated_at' ];
     
     protected $guarded = [
         'verification_status',
         'verification_sign',
         'verified_at',
+        'created_at',
+        'updated_at'
     ];
     
     
