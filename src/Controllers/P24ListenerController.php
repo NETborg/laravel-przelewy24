@@ -122,6 +122,13 @@ class P24ListenerController extends Controller
             }
         }
 
-        return redirect();
+        $redirectTo = '/';
+        if ($returnRoute = config('p24.route_return')) {
+            $redirectTo = preg_match('/^(http|https):\/\//i', $returnRoute) > 0
+                ? $returnRoute
+                : url(route($returnRoute), [], true);
+        }
+
+        return redirect($redirectTo);
     }
 }
