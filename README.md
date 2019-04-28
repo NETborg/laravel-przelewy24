@@ -59,8 +59,8 @@ return [
     'mode' => env('P24_MODE', 'sandbox'),
     
     /*  
-        provide route name (don't use URL here) where Client shoud be redirected 
-        on transaction cancellation (you can override it on transaction registration)
+        provide route name (or URL starting with `http://` or `https://`) where Client shoud be redirected 
+        on transaction cancellation or after payment completion (you can override it on transaction registration)
     */
     'route_return' => null,
 ];
