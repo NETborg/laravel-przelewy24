@@ -35,7 +35,7 @@ class CreateP24TransactionsTable extends Migration
             $table->integer('p24_channel')->nullable();
             $table->integer('p24_shipping')->unsigned()->default(0);
             $table->string('p24_transfer_label', 20)->nullable();
-            $table->string('p24_sign', 100);
+            $table->string('p24_sign', 100)->nullable();
             $table->string('p24_encoding', 15)->default('UTF-8');
             $table->integer('p24_order_id')->nullable();
             $table->string('p24_statement')->nullable();
