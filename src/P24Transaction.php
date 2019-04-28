@@ -32,7 +32,7 @@ use NetborgTeam\P24\Supporters\RandGenerator;
  * @property int|null $p24_channel
  * @property int|null $p24_shipping
  * @property string|null $p24_transfer_label
- * @property string $p24_sign
+ * @property string|null $p24_sign
  * @property string $p24_encoding
  * @property int|null $p24_order_id
  * @property string|null $p24_statement
