@@ -14,16 +14,23 @@ class TransactionShort extends P24ResponseObject
 {
     protected $keys = [
         'orderId',
-        'orderIdFull',
         'sessionId',
         'status',
         'amount',
+        'currency',
         'date',
         'dateOfTransaction',
         'clientEmail',
         'accountMD5',
         'paymentMethod',
-        'description'
+        'description',
+        'clientAddress',
+        'clientCity',
+        'clientName',
+        'clientPostcode',
+        'batchId',
+        'fee',
+        'statement',
     ];
 
     protected $dates = ['date', 'dateOfTransaction'];

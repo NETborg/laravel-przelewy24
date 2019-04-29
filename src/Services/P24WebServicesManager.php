@@ -13,23 +13,52 @@ use NetborgTeam\P24\Exceptions\InvalidCRCException;
 use NetborgTeam\P24\Exceptions\InvalidMerchantIdException;
 use NetborgTeam\P24\Exceptions\P24ConnectionException;
 use NetborgTeam\P24\PaymentMethodsResult;
-use NetborgTeam\P24\TransactionFullResult;
 use NetborgTeam\P24\TransactionRefundResult;
 use NetborgTeam\P24\TransactionShortResult;
 
 class P24WebServicesManager
 {
-//    const ENDPOINT_LIVE = "https://secure.przelewy24.pl/external/wsdl/service.php?wsdl"; //"https://secure.przelewy24.pl/external/{merchant_id}.wsdl";
-//    const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl/external/wsdl/service.php?wsdl"; //"https://sandbox.przelewy24.pl/external/{merchant_id}.wsdl";
-//    const ENDPOINT_LIVE_CARD = "https://secure.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
-//    const ENDPOINT_SANDBOX_CARD = "https://sandbox.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
-
-    const ENDPOINT_LIVE = "https://secure.przelewy24.pl/external/{merchant_id}.wsdl"; //"https://secure.przelewy24.pl/external/{merchant_id}.wsdl";
-    const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl/external/{merchant_id}.wsdl"; //"https://sandbox.przelewy24.pl/external/{merchant_id}.wsdl";
+    const ENDPOINT_LIVE = "https://secure.przelewy24.pl/external/{merchant_id}.wsdl";
+    const ENDPOINT_SANDBOX = "https://sandbox.przelewy24.pl/external/{merchant_id}.wsdl";
     const ENDPOINT_LIVE_CARD = "https://secure.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
     const ENDPOINT_SANDBOX_CARD = "https://sandbox.przelewy24.pl/external/wsdl/charge_card_service.php?wsdl";
 
+    const STATUS_NO_PAYMENT = "no_payment";
+    const STATUS_PREPAID = "prepaid";
+    const STATUS_PAID = "paid";
+    const STATUS_RETURNED = "returned";
 
+    /**
+     * @return String[]
+     */
+    public static function statuses()
+    {
+        return [
+            self::STATUS_NO_PAYMENT,
+            self::STATUS_PREPAID,
+            self::STATUS_PAID,
+            self::STATUS_RETURNED,
+        ];
+    }
+
+    /**
+     * @param  int         $status
+     * @return String|null
+     */
+    public static function translateStatus($status)
+    {
+        $statuses = self::statuses();
+        if (isset($statuses[(int) $status])) {
+            return $statuses[(int) $status];
+        }
+
+        return null;
+    }
+
+
+    /**
+     * @var String[]
+     */
     public static $CARD_METHODS = [
         'GetTransactionReference',
         'ChargeCard',
@@ -38,10 +67,29 @@ class P24WebServicesManager
     ];
 
 
+    /**
+     * @var int
+     */
     private $merchantId;
+
+    /**
+     * @var int
+     */
     private $posId;
+
+    /**
+     * @var string|null
+     */
     private $crc;
+
+    /**
+     * @var string|null
+     */
     private $apiKey;
+
+    /**
+     * @var \SoapClient
+     */
     private $soap;
 
 
@@ -73,7 +121,10 @@ class P24WebServicesManager
     }
 
 
-
+    /**
+     * @param  null         $method
+     * @return mixed|string
+     */
     protected function endpoint($method=null)
     {
         if ($method && in_array(camel_case($method), static::$CARD_METHODS)) {
@@ -93,21 +144,6 @@ class P24WebServicesManager
         return $endpoint;
     }
 
-    public function getFunctions()
-    {
-        return $this->soap->__getFunctions();
-    }
-
-    public function getLastRequest()
-    {
-        return $this->soap->__getLastRequest();
-    }
-
-    public function getLastResponse()
-    {
-        return $this->soap->__getLastResponse();
-    }
-
 
     /**
      * Tests connection and authentication to Przelewy24 web service.
@@ -117,7 +153,7 @@ class P24WebServicesManager
      */
     public function testAccess()
     {
-        return $this->soap->TestAccess($this->merchantId, $this->apiKey);
+        return (bool) $this->soap->TestAccess($this->merchantId, $this->apiKey);
     }
 
     /**
@@ -155,30 +191,21 @@ class P24WebServicesManager
     }
 
     /**
-     * Gets full transaction details from Przelewy24 web service.
-     *
-     * @param  string                $sessionId
-     * @return TransactionFullResult
+     * @param $orderId
+     * @param $sessionId
+     * @param $amount
+     * @param  string $currency
+     * @return mixed
      */
-    public function getTransactionFullBySessionId($sessionId)
-    {
-        return new TransactionFullResult(
-            $this->soap->TrnFullBySessionId(
-                $this->merchantId,
-                $this->apiKey,
-                $sessionId
-            )
-        );
-    }
-
-    public function getVerifyTransactionResult($orderId, $sessionId, $amount)
+    public function getVerifyTransactionResult($orderId, $sessionId, $amount, $currency='PLN')
     {
         return $this->soap->VerifyTransaction(
             $this->merchantId,
             $this->apiKey,
             $orderId,
             $sessionId,
-            $amount
+            $amount,
+            $currency
         );
     }
 
@@ -192,7 +219,7 @@ class P24WebServicesManager
     public function refund($batch, ArrayOfRefund $refundList)
     {
         return new TransactionRefundResult(
-            $this->soap->TrnRefund(
+            $this->soap->RefundTransaction(
                 $this->merchantId,
                 $this->apiKey,
                 $batch,
