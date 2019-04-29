@@ -157,27 +157,16 @@ $wsManager = $manager->webServices();
 $result = $wsManager->testAccess();     // returns bool `true` if accessed successfully, `false` otherwise
 ```
 
-##### Get a list of available Web Service functions #####
-
-```php
-$list = $wsManager->getFunctions();
-```
-
 ##### Get list of available Payment Methods #####
 
 ```php
 $list = $wsManager->getPaymentMethods()->result();  // returns an array of `PaymentMethod` instances.
 ```
 
-##### Get SHORT transaction details by `p24_session_id` #####
+##### Get transaction details by `p24_session_id` #####
 
 ```php
 $transaction = $wsManager->getTransactionBySessionId('SESSION_ID')->result();  // where `SESSION_ID` is a `p24_session_id` parameter provided while transaction registration.
-```
-##### Get FULL transaction details by `p24_session_id` #####
-
-```php
-$transaction = $wsManager->getTransactionFullBySessionId('SESSION_ID')->result();  // where `SESSION_ID` is a `p24_session_id` parameter provided while transaction registration.
 ```
 
 ##### Make transaction refunds #####

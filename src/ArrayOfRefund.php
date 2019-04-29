@@ -8,7 +8,9 @@
 
 namespace NetborgTeam\P24;
 
-class ArrayOfRefund
+use Illuminate\Contracts\Support\Arrayable;
+
+class ArrayOfRefund implements Arrayable
 {
     protected $data = [];
 
