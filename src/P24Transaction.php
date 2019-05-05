@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use NetborgTeam\P24\Contracts\P24SignableContract;
 use NetborgTeam\P24\Services\P24Manager;
 use NetborgTeam\P24\Supporters\RandGenerator;
 use Ramsey\Uuid\Uuid;
@@ -15,6 +16,8 @@ use Ramsey\Uuid\Uuid;
  * @package NetborgTeam\P24
  *
  * @property string $id
+ * @property int $p24_merchant_id
+ * @property int $p24_pos_id
  * @property string $p24_session_id
  * @property int $p24_amount
  * @property string $p24_currency
@@ -43,7 +46,7 @@ use Ramsey\Uuid\Uuid;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
-class P24Transaction extends Model
+class P24Transaction extends Model implements P24SignableContract
 {
     protected $table = "p24_transactions";
     public $incrementing = false;
@@ -58,6 +61,8 @@ class P24Transaction extends Model
     protected $dates = ['created_at', 'updated_at'];
 
     protected $casts = [
+        'p24_merchant_id' => 'integer',
+        'p24_pos_id' => 'integer',
         'p24_amount' => 'integer',
         'p24_method' => 'integer',
         'p24_time_limit' => 'integer',
@@ -129,5 +134,20 @@ class P24Transaction extends Model
         return 'live' === config('p24.mode')
             ? redirect(str_replace('{token}', $this->token, P24Manager::PAYMENT_LIVE_REDIRECT_URL))
             : redirect(str_replace('{token}', $this->token, P24Manager::PAYMENT_SANDBOX_REDIRECT_URL));
+    }
+
+    /**
+     * Creates and returns signable attributes array.
+     *
+     * @return array
+     */
+    public function getSignablePayload(): array
+    {
+        return [
+            $this->p24_session_id,
+            $this->merchant_id,
+            $this->p24_amount,
+            $this->p24_currency,
+        ];
     }
 }

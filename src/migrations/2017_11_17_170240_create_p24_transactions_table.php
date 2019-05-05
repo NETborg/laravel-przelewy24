@@ -15,6 +15,8 @@ class CreateP24TransactionsTable extends Migration
     {
         Schema::create('p24_transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->integer('p24_merchant_id')->unsigned();
+            $table->integer('p24_pos_id')->unsigned();
             $table->string('p24_session_id', 100);
             $table->integer('p24_amount')->unsigned()->default(0);
             $table->string('p24_currency', 3)->default('PLN');

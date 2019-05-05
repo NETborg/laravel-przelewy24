@@ -6,42 +6,33 @@ __Please note:__
 This library is still in early stage of development. Some functionalities may not work correctly or not work at all. Use on your own risk.
 
 ### Requirements ###
-* PHP 5.6+
-* Laravel 5.4+
+* PHP 7.1.3+
+* Laravel 5.6+
 * PHP modules: php-soap, php-json
-* optionally [netborgteam/laravel-slack](https://bitbucket.org/netborgteam/laravel-slack) (for getting notification about payment events on Slack's channel)
+* requires HTTPS
 
 ### Installation ###
 ```
-composer require netborg/laravel-przelewy24 "^1.0"
+composer require netborg/laravel-przelewy24 "^2.0"
 composer update
 ```
 
-If your run on Laravel 5.4, manually add Service Provider to your `config/app.php` file. For Laravel 5.5 and above, service auto-discovery feature will automatically do the job for you.
-```php
-/*
-* Package Service Providers...
-*/
-	      
-// ....
-NetborgTeam\P24\Providers\P24Provider::class,
+Publish P24 config file:
+```shell
+php artisan vendor:publish --tag="p24-config"
 ```
 
-Manually copy `config/p24.php` config file to your `config` directory or execute:
-```php
-php artisan vendor:publish
-```
-
-Library comes with core database structure to handle payment requests. Optionally you may need to copy migration classes to your `database/migrations` folder if you require to customise database schema. 
-Then execute database migrations:
-```php
-php artisan migrate
+Library comes with core database structure to handle payment requests. Optionally you may need to copy migration classes to your `database/migrations` folder for further database schema customization. 
+Execute database migrations:
+```shell
+php artisan vendor:publish --tag="p24-migrations"   // (optional) - if you want to publish and customize database schema before `php artisan migrate` command execution.
+php artisan migrate     // always execute this command (even if you have not required optional migration publishing above)
 ```
 
 ### Configuration ###
 
 Provide your Merchant details in your `.env` config file:
-```
+```dotenv
 P24_MERCHANT_ID=    // your MerchantId received from Przelewy24 ie. `123456`
 P24_POS_ID=         // your PosId received from Przelewy24 (or copy your MerchantId from above)
 P24_CRC=            // your CRC available in your panel on Przelewy24.

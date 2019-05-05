@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: netborg
@@ -95,17 +96,19 @@ class P24WebServicesManager
 
     /**
      * P24WebServicesManager constructor.
+     * @param array $config
+     *
      * @throws InvalidCRCException
      * @throws InvalidMerchantIdException
      * @throws P24ConnectionException
      * @throws \SoapFault
      */
-    public function __construct()
+    public function __construct(array $config)
     {
-        $this->merchantId = config('p24.merchant_id', 0);
-        $this->posId = config('p24.pos_id', 0) > 0 ? config('p24.pos_id', 0) : $this->merchantId;
-        $this->crc = config('p24.crc', null);
-        $this->apiKey = config('p24.api_key', null);
+        $this->merchantId = (int) $config['merchant_id'] ?? 0;
+        $this->posId = isset($config['pos_id']) ? (int) $config['pos_id'] : $this->merchantId;
+        $this->crc = $config['crc'] ?? null;
+        $this->apiKey = $config['api_key'] ?? null;
 
         if ((int) $this->merchantId === 0) {
             throw new InvalidMerchantIdException();

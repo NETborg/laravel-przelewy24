@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace NetborgTeam\P24;
 
@@ -7,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use NetborgTeam\P24\Contracts\P24SignableContract;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -30,16 +32,16 @@ use Ramsey\Uuid\Uuid;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
-class P24TransactionConfirmation extends Model
+class P24TransactionConfirmation extends Model implements P24SignableContract
 {
     const STATUS_NEW = "new";
     const STATUS_INVALID_TRANSACTION_SIGNATURE = "invalid_transaction_signature";
-    const STATUS_AWAITING_CONFIRMATION_VERIFICATION = "awaiting_confirmation_verification";
     const STATUS_INVALID_VERIFICATION_SIGNATURE = "invalid_verification_signature";
     const STATUS_INVALID_TRANSACTION_PARAMETER = "invalid_transaction_parameter";
     const STATUS_INVALID_SENDER_IP = "invalid_sender_ip";
-    const STATUS_CONFIRMED = "confirmed";
-    const STATUS_CONFIRMED_VERIFIED = "confirmed_verified";
+    const STATUS_VALID_UNVERIFIED = "valid_unverified";
+    const STATUS_VERIFIED = "verified";
+    const STATUS_VERIFICATION_FAILED = "verification_failed";
     
     
     
@@ -57,6 +59,14 @@ class P24TransactionConfirmation extends Model
         'created_at',
         'updated_at'
     ];
+
+    protected $casts = [
+        'p24_merchant_id' => 'integer',
+        'p24_pos_id' => 'integer',
+        'p24_amount' => 'integer',
+        'p24_order_id' => 'integer',
+        'p24_method' => 'integer',
+    ];
     
     
     
@@ -64,11 +74,11 @@ class P24TransactionConfirmation extends Model
     /**
      * Builds a P24TransactionConfirmation object from Request.
      *
-     * @param  Request                                     $request
-     * @param  array                                       $keys
-     * @return \NetborgTeam\P24\P24TransactionConfirmation
+     * @param  Request                    $request
+     * @param  array                      $keys
+     * @return P24TransactionConfirmation
      */
-    public static function makeInstance(Request $request, array $keys)
+    public static function makeInstance(Request $request, array $keys): P24TransactionConfirmation
     {
         $confirmation = new P24TransactionConfirmation();
         
@@ -87,7 +97,7 @@ class P24TransactionConfirmation extends Model
      * @param  int    $chars
      * @return string
      */
-    public static function generateUid($chars = 36)
+    public static function generateUid($chars = 36): string
     {
         try {
             return (string) Uuid::uuid4();
@@ -100,30 +110,47 @@ class P24TransactionConfirmation extends Model
             return Str::random($chars);
         }
     }
-    
-    
-    
-    
-    
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function p24Transaction()
     {
         return $this->belongsTo(P24Transaction::class);
     }
-    
-    
+
+
     /**
      * Confirms positive verification of this Transaction Confirmation.
      *
-     * @param  string $sign
-     * @return $this
+     * @param  string      $status
+     * @param  string|null $sign
+     * @return self
      */
-    public function confirmVerified($sign)
+    public function setVerificationResult(string $status, ?string $sign): self
     {
         $this->verification_sign = $sign;
         $this->verified_at = Carbon::now();
+        $this->verification_status = $status;
         
         $this->save();
         
         return $this;
+    }
+
+    /**
+     * Creates and returns signable attributes array.
+     *
+     * @return array
+     */
+    public function getSignablePayload(): array
+    {
+        return [
+            $this->p24_session_id,
+            $this->p24_order_id,
+            $this->p24_amount,
+            $this->p24_currency
+        ];
     }
 }
