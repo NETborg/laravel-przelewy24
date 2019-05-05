@@ -13,7 +13,7 @@ This library is still in early stage of development. Some functionalities may no
 
 ### Installation ###
 ```
-composer require netborg/laravel-przelewy24
+composer require netborg/laravel-przelewy24 "^1.0"
 composer update
 ```
 
