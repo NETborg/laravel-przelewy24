@@ -5,11 +5,8 @@ namespace NetborgTeam\P24\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Facades\Log;
-use NetborgTeam\P24\Events\P24TransactionConfirmationSuccessEvent;
 use NetborgTeam\P24\Exceptions\InvalidMerchantIdException;
 use NetborgTeam\P24\Exceptions\InvalidCRCException;
-use NetborgTeam\P24\Exceptions\InvalidSenderException;
 use NetborgTeam\P24\Exceptions\InvalidSignatureException;
 use NetborgTeam\P24\Exceptions\P24ConnectionException;
 use NetborgTeam\P24\Exceptions\InvalidTransactionException;
@@ -135,8 +132,10 @@ class P24Manager
      */
     private $signer;
 
+    /**
+     * @var P24TransactionConfirmationValidator
+     */
     private $transactionConfirmationValidator;
-
 
     /**
      * @var int
@@ -186,7 +185,7 @@ class P24Manager
         $this->posId = isset($config['pos_id']) ? (int) $config['pos_id'] ?? 0 : $this->merchantId;
         $this->crc = $config['crc'] ?? null;
         
-        if (0 === $this->merchantId) {
+        if (!$this->merchantId) {
             throw new InvalidMerchantIdException();
         }
         if (!$this->crc) {
@@ -520,7 +519,7 @@ class P24Manager
      * @param $response
      * @return GeneralError
      */
-    public function parseErrorResponse($response)
+    public function parseErrorResponse($response): GeneralError
     {
         preg_match("/^error=(\d+)&errorMessage=(.*)$/", $response, $matches);
         if (count($matches) == 3) {
@@ -538,9 +537,9 @@ class P24Manager
 
     /**
      * @param $response
-     * @return array|bool
+     * @return array|null
      */
-    protected function parseRegistrationResponse($response)
+    protected function parseRegistrationResponse($response): ?array
     {
         preg_match("/^error=(\d+)&errorMessage=(.*)$/", $response, $matches);
         if (count($matches) == 3) {
@@ -564,6 +563,6 @@ class P24Manager
             ];
         }
         
-        return false;
+        return null;
     }
 }

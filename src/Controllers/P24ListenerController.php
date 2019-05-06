@@ -34,6 +34,7 @@ class P24ListenerController extends Controller
 
         Log::debug("Processed Request params [TransactionConfirmation]: ".$transactionConfirmation->toJson(JSON_UNESCAPED_UNICODE));
 
+        // check if request comes from valid P24 server
         if (!$manager->isValidSender($request)) {
             $transactionConfirmation->verification_status = P24TransactionConfirmation::STATUS_INVALID_SENDER_IP;
             $transactionConfirmation->save();

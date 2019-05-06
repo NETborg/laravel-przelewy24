@@ -110,7 +110,7 @@ class P24WebServicesManager
         $this->crc = $config['crc'] ?? null;
         $this->apiKey = $config['api_key'] ?? null;
 
-        if ((int) $this->merchantId === 0) {
+        if (!$this->merchantId) {
             throw new InvalidMerchantIdException();
         }
         if (!$this->crc) {
