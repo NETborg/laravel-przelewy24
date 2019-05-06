@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: netborg
@@ -14,6 +15,7 @@ abstract class P24Response
      * @var mixed
      */
     protected $result;
+
     /**
      * @var GeneralError
      */
@@ -25,8 +27,10 @@ abstract class P24Response
     protected $response;
 
 
-
-
+    /**
+     * P24Response constructor.
+     * @param object|array|null $response
+     */
     public function __construct($response)
     {
         $this->response = $response;
@@ -65,7 +69,7 @@ abstract class P24Response
      *
      * @return bool
      */
-    public function isError()
+    public function isError(): bool
     {
         return ((int) $this->error->errorCode) > 0;
     }
@@ -76,7 +80,7 @@ abstract class P24Response
      *
      * @return GeneralError
      */
-    public function error()
+    public function error(): GeneralError
     {
         return $this->error;
     }

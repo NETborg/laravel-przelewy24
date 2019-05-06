@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: netborg
@@ -12,6 +13,9 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class ArrayOfRefund implements Arrayable
 {
+    /**
+     * @var array
+     */
     protected $data = [];
 
 
@@ -23,7 +27,7 @@ class ArrayOfRefund implements Arrayable
      * @param  SingleRefund  $refund
      * @return ArrayOfRefund
      */
-    public function add(SingleRefund $refund)
+    public function add(SingleRefund $refund): self
     {
         if ($this->has($refund)) {
             $this->remove($refund);
@@ -41,7 +45,7 @@ class ArrayOfRefund implements Arrayable
      * @param  int           $amount
      * @return ArrayOfRefund
      */
-    public function addByKeys($sessionId, $orderId, $amount)
+    public function addByKeys(string $sessionId, int $orderId, int $amount): self
     {
         $this->add(new SingleRefund([
             'sessionId' => $sessionId,
@@ -62,13 +66,13 @@ class ArrayOfRefund implements Arrayable
     public function remove($subject)
     {
         if ($subject instanceof SingleRefund) {
-            $sessionId = $subject->sessionId;
+            $sessionId = (string) $subject->sessionId;
         } else {
-            $sessionId = $subject;
+            $sessionId = (string) $subject;
         }
 
         foreach ($this->data as $i => $refund) {
-            if ($refund->sessionId == $sessionId) {
+            if ((string) $refund->sessionId === $sessionId) {
                 unset($this->data[$i]);
             }
         }
@@ -80,15 +84,15 @@ class ArrayOfRefund implements Arrayable
      * @param  int|string        $subject
      * @return SingleRefund|null
      */
-    public function get($subject)
+    public function get($subject): ?SingleRefund
     {
         if (is_numeric($subject) || is_integer($subject)) {
-            if (isset($this->data[$subject])) {
-                return $this->data[$subject];
+            if (isset($this->data[(int) $subject])) {
+                return $this->data[(int) $subject];
             }
         } elseif (is_string($subject)) {
             foreach ($this->data as $i => $refund) {
-                if ($refund->sessionId == $subject) {
+                if ((string) $refund->sessionId === $subject) {
                     return $refund;
                 }
             }
@@ -103,16 +107,16 @@ class ArrayOfRefund implements Arrayable
      * @param  SingleRefund|string $subject
      * @return bool
      */
-    public function has($subject)
+    public function has($subject): bool
     {
         if ($subject instanceof SingleRefund) {
-            $sessionId = $subject->sessionId;
+            $sessionId = (string) $subject->sessionId;
         } else {
-            $sessionId = $subject;
+            $sessionId = (string) $subject;
         }
 
         foreach ($this->data as $i => $refund) {
-            if ($refund->sessionId == $sessionId) {
+            if ((string) $refund->sessionId === $sessionId) {
                 return true;
             }
         }
@@ -126,7 +130,7 @@ class ArrayOfRefund implements Arrayable
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $array = [];
         foreach ($this->data as $refund) {

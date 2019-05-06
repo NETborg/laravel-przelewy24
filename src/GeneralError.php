@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: netborg
@@ -17,12 +18,19 @@ namespace NetborgTeam\P24;
  */
 class GeneralError extends P24ResponseObject
 {
+    /**
+     * @var array
+     */
     protected $keys = [
         'errorCode',
         'errorMessage'
     ];
 
 
+    /**
+     * GeneralError constructor.
+     * @param object|null $response
+     */
     public function __construct($response = null)
     {
         parent::__construct($response);

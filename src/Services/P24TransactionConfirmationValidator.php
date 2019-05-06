@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NetborgTeam\P24\Services;
 
-use Illuminate\Http\Request;
 use NetborgTeam\P24\Contracts\P24SignerContract;
 use NetborgTeam\P24\Exceptions\InvalidSignatureException;
 use NetborgTeam\P24\Exceptions\InvalidTransactionParameterException;
@@ -39,9 +38,6 @@ class P24TransactionConfirmationValidator
     {
         $this->validateSignature($transactionConfirmation);
         $this->validateTransactionParameters($transaction, $transactionConfirmation);
-
-        $transactionConfirmation->verification_status = P24TransactionConfirmation::STATUS_AWAITING_CONFIRMATION_VERIFICATION;
-        $transactionConfirmation->save();
     }
 
     /**
@@ -69,18 +65,12 @@ class P24TransactionConfirmationValidator
             throw new InvalidTransactionParameterException('p24_merchant_id', $transaction->p24_merchant_id, $transactionConfirmation->p24_merchant_id);
         }
         if ($transaction->p24_pos_id !== $transactionConfirmation->p24_pos_id) {
-            $transactionConfirmation->verification_status = P24TransactionConfirmation::STATUS_INVALID_TRANSACTION_PARAMETER;
-            $transactionConfirmation->save();
             throw new InvalidTransactionParameterException('p24_pos_id', $transaction->p24_pos_id, $transactionConfirmation->p24_pos_id);
         }
         if ($transaction->p24_amount !== $transactionConfirmation->p24_amount) {
-            $transactionConfirmation->verification_status = P24TransactionConfirmation::STATUS_INVALID_TRANSACTION_PARAMETER;
-            $transactionConfirmation->save();
             throw new InvalidTransactionParameterException('p24_amount', $transaction->p24_amount, $transactionConfirmation->p24_amount);
         }
         if ($transaction->p24_currency !== $transactionConfirmation->p24_currency) {
-            $transactionConfirmation->verification_status = P24TransactionConfirmation::STATUS_INVALID_TRANSACTION_PARAMETER;
-            $transactionConfirmation->save();
             throw new InvalidTransactionParameterException('p24_currency', $transaction->p24_currency, $transactionConfirmation->p24_currency);
         }
     }

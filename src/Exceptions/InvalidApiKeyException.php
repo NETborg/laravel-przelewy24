@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace NetborgTeam\P24\Exceptions;
 
@@ -9,10 +10,16 @@ namespace NetborgTeam\P24\Exceptions;
  */
 class InvalidApiKeyException extends \Exception
 {
+    /**
+     * InvalidApiKeyException constructor.
+     * @param string          $message
+     * @param int             $code
+     * @param \Throwable|null $previous
+     */
     public function __construct(
-        $message = "Invalid API KEY. Please check if you have not forgotten to provide a valid P24_API_KEY in `.env` file.",
-        $code = 0,
-        $previous = null
+        string $message = "Invalid API KEY. Please check if you have not forgotten to provide a valid P24_API_KEY in `.env` file.",
+        int $code = 0,
+        \Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
     }

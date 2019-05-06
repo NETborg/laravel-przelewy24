@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace NetborgTeam\P24;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -48,18 +51,38 @@ use Ramsey\Uuid\Uuid;
  */
 class P24Transaction extends Model implements P24SignableContract
 {
+    /**
+     * @var string
+     */
     protected $table = "p24_transactions";
+
+    /**
+     * @var bool
+     */
     public $incrementing = false;
+
+    /**
+     * @var string
+     */
     protected $keyType = 'string';
-    
+
+    /**
+     * @var array
+     */
     protected $guarded = [
         'token',
         'created_at',
         'updated_at',
     ];
 
+    /**
+     * @var array
+     */
     protected $dates = ['created_at', 'updated_at'];
 
+    /**
+     * @var array
+     */
     protected $casts = [
         'p24_merchant_id' => 'integer',
         'p24_pos_id' => 'integer',
@@ -79,7 +102,7 @@ class P24Transaction extends Model implements P24SignableContract
      * @param  int    $chars
      * @return string
      */
-    public static function generateUid($chars = 36)
+    public static function generateUid($chars = 36): string
     {
         try {
             return (string) Uuid::uuid4();
@@ -92,9 +115,13 @@ class P24Transaction extends Model implements P24SignableContract
             return Str::random($chars);
         }
     }
-    
-    
-    public static function makeUniqueId($sessionId, $seperator='|')
+
+    /**
+     * @param $sessionId
+     * @param  string $seperator
+     * @return string
+     */
+    public static function makeUniqueId($sessionId, $seperator='|'): string
     {
         do {
             $uniqueId = $sessionId.$seperator.RandGenerator::generate(100 - strlen($seperator.$sessionId));
@@ -103,22 +130,30 @@ class P24Transaction extends Model implements P24SignableContract
         
         return $uniqueId;
     }
-    
-    
-    
+
+
+    /**
+     * @return HasMany
+     */
     public function p24TransactionItems()
     {
         return $this->hasMany(P24TransactionItem::class);
     }
-    
+
+    /**
+     * @return HasOne
+     */
     public function p24TransactionConfirmation()
     {
         return $this->hasOne(P24TransactionConfirmation::class);
     }
-    
-    
-    
-    public function token($token=null)
+
+
+    /**
+     * @param  string|null       $token
+     * @return $this|string|null
+     */
+    public function token(string $token=null)
     {
         if ($token) {
             $this->token = $token;
@@ -129,6 +164,9 @@ class P24Transaction extends Model implements P24SignableContract
         return $this->token;
     }
 
+    /**
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     */
     public function redirectForPayment()
     {
         return 'live' === config('p24.mode')

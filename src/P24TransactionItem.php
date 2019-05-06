@@ -3,6 +3,7 @@
 namespace NetborgTeam\P24;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class P24TransactionItem
@@ -18,14 +19,25 @@ use Illuminate\Database\Eloquent\Model;
  */
 class P24TransactionItem extends Model
 {
+    /**
+     * @var string
+     */
     protected $table = "p24_transaction_items";
+
+    /**
+     * @var bool
+     */
     public $timestamps = false;
-    
+
+    /**
+     * @var array
+     */
     protected $guarded = [];
-    
-    
-    
-    
+
+
+    /**
+     * @return BelongsTo
+     */
     public function p24Transaction()
     {
         return $this->belongsTo(P24Transaction::class);

@@ -33,7 +33,7 @@ class P24Signer implements P24SignerContract
      */
     public function sign($signable): string
     {
-        if (!$signable instanceof P24SignableContract && !is_array($signable)) {
+        if (!($signable instanceof P24SignableContract) && !is_array($signable)) {
             throw new \InvalidArgumentException("Signable parameter must implement `".P24SignableContract::class."` or to be an array.");
         }
 

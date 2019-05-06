@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: netborg
@@ -34,6 +35,10 @@ abstract class P24ResponseObject implements Arrayable, Jsonable
     protected $response;
 
 
+    /**
+     * P24ResponseObject constructor.
+     * @param object|array|null $response
+     */
     public function __construct($response=null)
     {
         $this->response = $response;
@@ -86,7 +91,7 @@ abstract class P24ResponseObject implements Arrayable, Jsonable
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $out = [];
 
@@ -103,10 +108,10 @@ abstract class P24ResponseObject implements Arrayable, Jsonable
     }
 
     /**
-     * @param  int         $options
-     * @return string|void
+     * @param  int    $options
+     * @return string
      */
-    public function toJson($options = 0)
+    public function toJson($options = 0): string
     {
         return json_encode($this->toArray(), $options);
     }

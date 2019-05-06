@@ -5,6 +5,7 @@ namespace NetborgTeam\P24;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -42,16 +43,31 @@ class P24TransactionConfirmation extends Model implements P24SignableContract
     const STATUS_VALID_UNVERIFIED = "valid_unverified";
     const STATUS_VERIFIED = "verified";
     const STATUS_VERIFICATION_FAILED = "verification_failed";
-    
-    
-    
-    
+
+
+    /**
+     * @var string
+     */
     protected $table = "p24_transaction_confirmations";
+
+    /**
+     * @var bool
+     */
     public $incrementing = false;
+
+    /**
+     * @var string
+     */
     protected $keyType = 'string';
 
+    /**
+     * @var array
+     */
     protected $dates = [ 'verified_at', 'created_at', 'updated_at' ];
-    
+
+    /**
+     * @var array
+     */
     protected $guarded = [
         'verification_status',
         'verification_sign',
@@ -60,6 +76,9 @@ class P24TransactionConfirmation extends Model implements P24SignableContract
         'updated_at'
     ];
 
+    /**
+     * @var array
+     */
     protected $casts = [
         'p24_merchant_id' => 'integer',
         'p24_pos_id' => 'integer',
@@ -113,7 +132,7 @@ class P24TransactionConfirmation extends Model implements P24SignableContract
 
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function p24Transaction()
     {

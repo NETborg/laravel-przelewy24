@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace NetborgTeam\P24\Services;
 
+use Illuminate\Support\Str;
 use NetborgTeam\P24\ArrayOfRefund;
 use NetborgTeam\P24\Exceptions\InvalidCRCException;
 use NetborgTeam\P24\Exceptions\InvalidMerchantIdException;
 use NetborgTeam\P24\Exceptions\P24ConnectionException;
+use NetborgTeam\P24\GeneralError;
 use NetborgTeam\P24\PaymentMethodsResult;
 use NetborgTeam\P24\TransactionRefundResult;
 use NetborgTeam\P24\TransactionShortResult;
@@ -32,7 +34,7 @@ class P24WebServicesManager
     /**
      * @return String[]
      */
-    public static function statuses()
+    public static function statuses(): array
     {
         return [
             self::STATUS_NO_PAYMENT,
@@ -44,9 +46,9 @@ class P24WebServicesManager
 
     /**
      * @param  int         $status
-     * @return String|null
+     * @return string|null
      */
-    public static function translateStatus($status)
+    public static function translateStatus(int $status): ?string
     {
         $statuses = self::statuses();
         if (isset($statuses[(int) $status])) {
@@ -89,6 +91,11 @@ class P24WebServicesManager
     private $apiKey;
 
     /**
+     * @var string
+     */
+    private $mode;
+
+    /**
      * @var \SoapClient
      */
     private $soap;
@@ -109,6 +116,7 @@ class P24WebServicesManager
         $this->posId = isset($config['pos_id']) ? (int) $config['pos_id'] : $this->merchantId;
         $this->crc = $config['crc'] ?? null;
         $this->apiKey = $config['api_key'] ?? null;
+        $this->mode = $config['mode'] ?? 'sandbox';
 
         if (!$this->merchantId) {
             throw new InvalidMerchantIdException();
@@ -125,19 +133,19 @@ class P24WebServicesManager
 
 
     /**
-     * @param  null         $method
-     * @return mixed|string
+     * @param  string|null $method
+     * @return string
      */
-    protected function endpoint($method=null)
+    protected function endpoint(string $method=null): string
     {
-        if ($method && in_array(camel_case($method), static::$CARD_METHODS)) {
-            if (config('p24.mode') === 'live') {
+        if ($method && in_array(Str::camel($method), static::$CARD_METHODS)) {
+            if ($this->mode === 'live') {
                 $endpoint = self::ENDPOINT_LIVE_CARD;
             } else {
                 $endpoint = self::ENDPOINT_SANDBOX_CARD;
             }
         } else {
-            if (config('p24.mode') === 'live') {
+            if ($this->mode === 'live') {
                 $endpoint = str_replace('{merchant_id}', $this->merchantId, self::ENDPOINT_LIVE);
             } else {
                 $endpoint = str_replace('{merchant_id}', $this->merchantId, self::ENDPOINT_SANDBOX);
@@ -154,7 +162,7 @@ class P24WebServicesManager
      *
      * @return bool
      */
-    public function testAccess()
+    public function testAccess(): bool
     {
         return (bool) $this->soap->TestAccess($this->merchantId, $this->apiKey);
     }
@@ -165,7 +173,7 @@ class P24WebServicesManager
      * @param  string               $lang
      * @return PaymentMethodsResult
      */
-    public function getPaymentMethods($lang='pl')
+    public function getPaymentMethods(string $lang='pl'): PaymentMethodsResult
     {
         return new PaymentMethodsResult(
             $this->soap->PaymentMethods(
@@ -182,7 +190,7 @@ class P24WebServicesManager
      * @param  string                 $sessionId
      * @return TransactionShortResult
      */
-    public function getTransactionBySessionId($sessionId)
+    public function getTransactionBySessionId(string $sessionId): TransactionShortResult
     {
         return new TransactionShortResult(
             $this->soap->GetTransactionBySessionId(
@@ -194,15 +202,15 @@ class P24WebServicesManager
     }
 
     /**
-     * @param $orderId
-     * @param $sessionId
-     * @param $amount
-     * @param  string $currency
-     * @return mixed
+     * @param  int               $orderId
+     * @param  string            $sessionId
+     * @param  int               $amount
+     * @param  string            $currency
+     * @return bool|GeneralError
      */
-    public function getVerifyTransactionResult($orderId, $sessionId, $amount, $currency='PLN')
+    public function getVerifyTransactionResult(int $orderId, string $sessionId, int $amount, string $currency='PLN')
     {
-        return $this->soap->VerifyTransaction(
+        $result = $this->soap->VerifyTransaction(
             $this->merchantId,
             $this->apiKey,
             $orderId,
@@ -210,6 +218,8 @@ class P24WebServicesManager
             $amount,
             $currency
         );
+
+        return is_bool($result) ? $result : new GeneralError($result);
     }
 
     /**
@@ -219,7 +229,7 @@ class P24WebServicesManager
      * @param  ArrayOfRefund           $refundList
      * @return TransactionRefundResult
      */
-    public function refund($batch, ArrayOfRefund $refundList)
+    public function refund(int $batch, ArrayOfRefund $refundList): TransactionRefundResult
     {
         return new TransactionRefundResult(
             $this->soap->RefundTransaction(

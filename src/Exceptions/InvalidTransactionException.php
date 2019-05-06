@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace NetborgTeam\P24\Exceptions;
 
@@ -9,6 +10,9 @@ namespace NetborgTeam\P24\Exceptions;
  */
 class InvalidTransactionException extends \Exception
 {
+    /**
+     * InvalidTransactionException constructor.
+     */
     public function __construct()
     {
         $message = "Invalid P24Transaction.";

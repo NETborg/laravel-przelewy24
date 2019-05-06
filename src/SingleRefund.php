@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: netborg
@@ -10,6 +11,9 @@ namespace NetborgTeam\P24;
 
 class SingleRefund extends P24ResponseObject
 {
+    /**
+     * @var String[]
+     */
     protected $keys = [
         'orderId',
         'sessionId',

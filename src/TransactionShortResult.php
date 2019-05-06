@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: netborg
@@ -10,7 +11,11 @@ namespace NetborgTeam\P24;
 
 class TransactionShortResult extends P24Response
 {
-    public function parseResult($result)
+    /**
+     * @param $result
+     * @return TransactionShort|null
+     */
+    public function parseResult($result): ?TransactionShort
     {
         if (is_object($result)) {
             return new TransactionShort($result);

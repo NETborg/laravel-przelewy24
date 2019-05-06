@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace NetborgTeam\P24\Exceptions;
 
@@ -9,13 +10,29 @@ namespace NetborgTeam\P24\Exceptions;
  */
 class InvalidTransactionParameterException extends \Exception
 {
+    /**
+     * @var string
+     */
     protected $paramName;
 
+    /**
+     * @var mixed
+     */
     protected $expectedValue;
 
+    /**
+     * @var mixed
+     */
     protected $receivedValue;
 
-    public function __construct($paramName, $expectedValue, $receivedValue)
+
+    /**
+     * InvalidTransactionParameterException constructor.
+     * @param string $paramName
+     * @param mixed  $expectedValue
+     * @param mixed  $receivedValue
+     */
+    public function __construct(string $paramName, $expectedValue, $receivedValue)
     {
         $this->paramName = $paramName;
         $this->expectedValue = $expectedValue;
@@ -25,16 +42,25 @@ class InvalidTransactionParameterException extends \Exception
         parent::__construct($message, 0, null);
     }
 
-    public function getParameterName()
+    /**
+     * @return string
+     */
+    public function getParameterName(): string
     {
         return $this->paramName;
     }
 
+    /**
+     * @return mixed
+     */
     public function getExpectedValue()
     {
         return $this->expectedValue;
     }
 
+    /**
+     * @return mixed
+     */
     public function getReceivedValue()
     {
         return $this->receivedValue;

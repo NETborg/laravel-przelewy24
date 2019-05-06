@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: netborg
@@ -12,6 +13,9 @@ use Carbon\Carbon;
 
 class TransactionShort extends P24ResponseObject
 {
+    /**
+     * @var String[]
+     */
     protected $keys = [
         'orderId',
         'sessionId',
@@ -33,6 +37,9 @@ class TransactionShort extends P24ResponseObject
         'statement',
     ];
 
+    /**
+     * @var String[]
+     */
     protected $dates = ['date', 'dateOfTransaction'];
 
 

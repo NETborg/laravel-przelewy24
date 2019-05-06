@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: netborg
@@ -10,7 +11,11 @@ namespace NetborgTeam\P24;
 
 class PaymentMethodsResult extends P24Response
 {
-    public function parseResult($result)
+    /**
+     * @param $result
+     * @return PaymentMethod[]
+     */
+    public function parseResult($result): array
     {
         $methods = [];
 
