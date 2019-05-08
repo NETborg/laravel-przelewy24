@@ -1,0 +1,26 @@
+{
+    "result": {
+        "orderId": 300093526,
+        "sessionId": "cSgrAHUdZtGe1Fx2|HFrUaTmDqlJIVpJzxalZstGvJfKGNo3mlsTS0A5SrZKQhHEuiBHHroK6LhiahJ0pWcMxapP9m9ycXqvBRP5",
+        "status": 1,
+        "amount": 19900,
+        "currency": "PLN",
+        "date": "201904290101",
+        "dateOfTransaction": "201904290101",
+        "clientEmail": "client@netborg-software.com",
+        "accountMD5": "",
+        "paymentMethod": 112,
+        "description": "Transaction description",
+        "clientName": "",
+        "clientAddress": "",
+        "clientCity": "",
+        "clientPostcode": "",
+        "batchId": 0,
+        "fee": 378,
+        "statement": "093-526"
+    },
+    "error": {
+        "errorCode": 0,
+        "errorMessage": "Success, no error."
+    }
+}

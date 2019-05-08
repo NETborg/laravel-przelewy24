@@ -1,0 +1,448 @@
+{
+    "result": [
+        {
+            "name": "Alior - Raty",
+            "id": 129,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Allianz Bank",
+            "id": 68,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "08-18",
+                "saturday": "unavailable",
+                "sunday": "unavailable"
+            }
+        },
+        {
+            "name": "Bank Millennium",
+            "id": 85,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "05-22",
+                "saturday": "05-22",
+                "sunday": "unavailable"
+            }
+        },
+        {
+            "name": "Bank Ochrony \u015arodowiska",
+            "id": 48,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "08-19",
+                "saturday": "unavailable",
+                "sunday": "unavailable"
+            }
+        },
+        {
+            "name": "Bank PEKAO S.A.",
+            "id": 65,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Banki Sp\u00f3\u0142dzielcze",
+            "id": 143,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "BLIK - PSP",
+            "id": 154,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "BNP Paribas Polska",
+            "id": 33,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "06-20",
+                "saturday": "unavailable",
+                "sunday": "unavailable"
+            }
+        },
+        {
+            "name": "BZ WBK - Przelew24",
+            "id": 20,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Credit Agricole",
+            "id": 45,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "db Transfer",
+            "id": 110,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "DnB Nord",
+            "id": 103,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "08-18",
+                "saturday": "unavailable",
+                "sunday": "unavailable"
+            }
+        },
+        {
+            "name": "E-SKOK",
+            "id": 105,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "e-transfer Pocztowy24",
+            "id": 141,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "eBG\u017b",
+            "id": 160,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Euro Bank",
+            "id": 94,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "FM Bank",
+            "id": 90,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Getin Bank",
+            "id": 153,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "mBank - mTransfer",
+            "id": 25,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "mBank - Raty",
+            "id": 136,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "mPay",
+            "id": 97,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Noble Pay",
+            "id": 158,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142ac\u0119 w \u017babce",
+            "id": 176,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142ac\u0119 z Alior Bankiem",
+            "id": 88,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142ac\u0119 z CitiHandlowy",
+            "id": 119,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142ac\u0119 z IdeaBank",
+            "id": 161,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142ac\u0119 z IKO",
+            "id": 135,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142ac\u0119 z Inteligo",
+            "id": 26,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142ac\u0119 z iPKO (PKO BP)",
+            "id": 31,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142ac\u0119 z Orange",
+            "id": 146,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142ac\u0119 z Plus Bank",
+            "id": 131,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "P\u0142a\u0107 z ING",
+            "id": 112,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Podkarpacki BS",
+            "id": 144,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Polbank",
+            "id": 82,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "unavailable",
+                "sunday": "unavailable"
+            }
+        },
+        {
+            "name": "Przekaz tradycyjny",
+            "id": 178,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Przelew z BPH",
+            "id": 35,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "08-20",
+                "saturday": "unavailable",
+                "sunday": "unavailable"
+            }
+        },
+        {
+            "name": "Raiffeisen Bank PBL",
+            "id": 102,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "SkyCash",
+            "id": 87,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "T-Mobile Us\u0142ugi Bankowe",
+            "id": 121,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Toyota Bank",
+            "id": 64,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "U\u017cyj przedp\u0142aty",
+            "id": 177,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": "00-24",
+                "saturday": "00-24",
+                "sunday": "00-24"
+            }
+        },
+        {
+            "name": "Volkswagen Bank",
+            "id": 69,
+            "status": false,
+            "avaibilityHours": {
+                "mondayToFriday": "07-24",
+                "saturday": "unavailable",
+                "sunday": "unavailable"
+            }
+        },
+        {
+            "name": "Przekaz\/Przelew tradycyjny",
+            "id": 1000,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": null,
+                "saturday": null,
+                "sunday": null
+            }
+        },
+        {
+            "name": "U\u017cyj przedp\u0142aty",
+            "id": 2000,
+            "status": true,
+            "avaibilityHours": {
+                "mondayToFriday": null,
+                "saturday": null,
+                "sunday": null
+            }
+        }
+    ],
+    "error": {
+        "errorCode": 0,
+        "errorMessage": "Success, no error."
+    }
+}

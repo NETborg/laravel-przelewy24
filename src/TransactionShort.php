@@ -9,8 +9,31 @@ declare(strict_types=1);
 
 namespace NetborgTeam\P24;
 
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
+/**
+ * Class TransactionShort
+ * @package NetborgTeam\P24
+ *
+ * @property int $orderId
+ * @property string $sessionId
+ * @property int $status
+ * @property int $amount
+ * @property string $currency
+ * @property string|Carbon $date
+ * @property string|Carbon $dateOfTransaction
+ * @property string $clientEmail
+ * @property string $accountMD5
+ * @property int $paymentMethod
+ * @property string $description
+ * @property string $clientAddress
+ * @property string $clientCity
+ * @property string $clientName
+ * @property string $clientPostcode
+ * @property int $batchId
+ * @property int $fee
+ * @property string $statement
+ */
 class TransactionShort extends P24ResponseObject
 {
     /**

@@ -183,7 +183,7 @@ class P24Transaction extends Model implements P24SignableContract
     {
         return [
             $this->p24_session_id,
-            $this->merchant_id,
+            $this->p24_merchant_id,
             $this->p24_amount,
             $this->p24_currency,
         ];
