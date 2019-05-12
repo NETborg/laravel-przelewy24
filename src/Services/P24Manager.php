@@ -182,7 +182,7 @@ class P24Manager
     public function __construct(array $config, P24Signer $signer, P24TransactionConfirmationValidator $transactionConfirmationValidator)
     {
         $this->merchantId = (int) $config['merchant_id'] ?? 0;
-        $this->posId = isset($config['pos_id']) ? (int) $config['pos_id'] ?? 0 : $this->merchantId;
+        $this->posId = !empty($config['pos_id']) ? (int) $config['pos_id'] ?? 0 : $this->merchantId;
         $this->crc = $config['crc'] ?? null;
         
         if (!$this->merchantId) {
