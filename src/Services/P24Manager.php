@@ -351,6 +351,7 @@ class P24Manager
         $transaction->p24_merchant_id = $this->merchantId;
         $transaction->p24_pos_id = $this->posId;
         $transaction->p24_sign = $this->signer->sign($transaction->getSignablePayload());
+        $transaction->p24_encoding = $transaction->p24_encoding ?? 'UTF-8';
         $transaction->save();
 
         $this->data = $this->serialize($transaction);
@@ -385,6 +386,8 @@ class P24Manager
         if (!isset($this->data['p24_url_status'])) {
             $this->data['p24_url_status'] = url(route('getTransactionStatusListener'), [], true);
         }
+
+        $this->encodeAllTo($transaction->p24_encoding);
 
         $client = new Client();
         $response = $client->post($this->endpoint.'/trnRegister', [ "form_params" => $this->data]);
@@ -564,5 +567,25 @@ class P24Manager
         }
         
         return null;
+    }
+
+    /**
+     * Encodes strings to declared encoding
+     *
+     * @param string $encoding
+     */
+    protected function encodeAllTo(string $encoding): void
+    {
+        foreach ($this->data as $key => $value) {
+            if (!is_string($value)) {
+                continue;
+            }
+
+            if ($encoding === mb_detect_encoding($value)) {
+                continue;
+            }
+
+            $this->data[$key] = mb_convert_encoding($value, $encoding);
+        }
     }
 }
