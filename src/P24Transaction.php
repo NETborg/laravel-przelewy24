@@ -51,6 +51,9 @@ use Ramsey\Uuid\Uuid;
  */
 class P24Transaction extends Model implements P24SignableContract
 {
+
+    const MAX_SESSION_ID_SIZE = 100;
+
     /**
      * @var string
      */
@@ -118,13 +121,13 @@ class P24Transaction extends Model implements P24SignableContract
 
     /**
      * @param $sessionId
-     * @param  string $seperator
+     * @param  string $separator
      * @return string
      */
-    public static function makeUniqueId($sessionId, $seperator='|'): string
+    public static function makeUniqueId($sessionId, $separator='|'): string
     {
         do {
-            $uniqueId = $sessionId.$seperator.RandGenerator::generate(100 - strlen($seperator.$sessionId));
+            $uniqueId = $sessionId.$separator.RandGenerator::generate(self::MAX_SESSION_ID_SIZE - strlen($separator.$sessionId));
             $check = P24Transaction::where('p24_session_id', $uniqueId)->first();
         } while ($check);
         
