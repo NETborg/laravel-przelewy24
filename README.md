@@ -91,7 +91,7 @@ public function registerTransaction(
 ) { 
 
 	// create new Transaction (for attribute reference please see P24 API docs)
-	$transaction = \NetborgTeam\P24\P24Transaction::create([
+	$transaction = new \NetborgTeam\P24\P24Transaction([
 	// recommended way to provide session ID via supporting method
 	    'p24_session_id' => \NetborgTeam\P24\P24Transaction::makeUniqueId($request->session()->getId()),
 	    'p24_amount' => 19900,
@@ -102,7 +102,7 @@ public function registerTransaction(
 	]);
 
 	try {
-            $token = $manager->transaction($transaction)->register();
+            $token = $manager->register($transaction);
             
             if (is_string($token)) {
 	           /* 
