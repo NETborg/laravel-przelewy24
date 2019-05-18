@@ -17,7 +17,7 @@ class CreateP24TransactionsTable extends Migration
             $table->uuid('id')->primary();
             $table->integer('p24_merchant_id')->unsigned();
             $table->integer('p24_pos_id')->unsigned();
-            $table->string('p24_session_id', 100);
+            $table->string('p24_session_id')->nullable();
             $table->integer('p24_amount')->unsigned()->default(0);
             $table->string('p24_currency', 3)->default('PLN');
             $table->text('p24_description')->nullable();
