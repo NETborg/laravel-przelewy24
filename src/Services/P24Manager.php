@@ -192,7 +192,7 @@ class P24Manager
             throw new InvalidCRCException();
         }
         
-        if ('live' === $config['mode'] ?? 'sandbox') {
+        if ('live' === ($config['mode'] ?? 'sandbox')) {
             $this->endpoint = self::ENDPOINT_LIVE;
         } else {
             $this->endpoint = self::ENDPOINT_SANDBOX;
@@ -488,8 +488,7 @@ class P24Manager
     protected function makeTestConnectionPayload(): array
     {
         return [
-            $this->posId,
-            $this->crc
+            $this->posId
         ];
     }
 
